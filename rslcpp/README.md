@@ -59,6 +59,6 @@ For complete examples, see [`rslcpp_test/executables/`](../rslcpp_test/executabl
 
 ## Related packages
 
-- [`rslcpp_dynamic_job`](../rslcpp_dynamic_job/README.md): ready-made job executable that dynamically loads composable nodes
-- [`rslcpp_time_delay`](../rslcpp_time_delay/README.md) + [`rslcpp_time_delay_backend`](../rslcpp_time_delay_backend/README.md): per-topic message delay configuration
-- [`rslcpp_helper_nodes`](../rslcpp_helper_nodes/README.md): monitor / rosbag player / rosbag recorder helper nodes
+- [`rslcpp_dynamic_job`](../rslcpp_dynamic_job/): ready-made job executable that dynamically loads composable nodes
+- [`rslcpp_time_delay`](../rslcpp_time_delay/) + [`rslcpp_time_delay_backend`](../rslcpp_time_delay_backend/): per-topic message delay configuration
+- [`rslcpp_helper_nodes`](../rslcpp_helper_nodes/): monitor / rosbag player / rosbag recorder helper nodes

@@ -37,4 +37,4 @@ Headers:
 
 ## Related package
 
-- [`rslcpp_time_delay`](../rslcpp_time_delay/README.md): provides a composable node that loads a CSV config and programs `DelayBackend`.
+- [`rslcpp_time_delay`](../rslcpp_time_delay/): provides a composable node that loads a CSV config and programs `DelayBackend`.

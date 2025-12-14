@@ -55,7 +55,7 @@ Header: [`include/rslcpp_dynamic_job/backend.hpp`](./include/rslcpp_dynamic_job/
 
 This is useful for components that want to influence the simulation without owning the main loop.
 
-For concrete usage examples of these functions from within composable nodes, see [`rslcpp_helper_nodes/README.md`](../rslcpp_helper_nodes/README.md) (e.g., `SimulationMonitor` uses `set_exit_code(...)`, and `BagPlayer` uses `set_initial_time(...)`).
+For concrete usage examples of these functions from within composable nodes, see [`rslcpp_helper_nodes/`](../rslcpp_helper_nodes/) (e.g., `SimulationMonitor` uses `set_exit_code(...)`, and `BagPlayer` uses `set_initial_time(...)`).
 
 ## Notes
 
