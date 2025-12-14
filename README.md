@@ -5,7 +5,7 @@
 [![C++](https://img.shields.io/badge/C++-17-00599C?logo=c%2B%2B&logoColor=white)](https://isocpp.org/)
 [![Platform](https://img.shields.io/badge/Platform-Linux-FCC624?logo=linux&logoColor=black)](https://www.linux.org/)
 
-`rslcpp` lets you run a set of ROS 2 nodes in a single-threaded simulation loop with an explicit simulation clock and a fixed time step. The goal is to make simulation runs reproducible and simple to set up: write normal `rclcpp::Node`s, enable `use_sim_time`, and run them either via a small `Job` interface or by dynamically loading composable nodes from the command line.
+`rslcpp` - the ros simulation library for C++ - lets you run a set of ROS 2 nodes in a single-threaded simulation loop with an explicit simulation clock and a fixed time step. The goal is to make simulation runs reproducible and simple to set up: write normal `rclcpp::Node`s, enable `use_sim_time`, and run them either via a small `Job` interface or by dynamically loading composable nodes from the command line.
 
 ## Advantages & Applications
 
@@ -118,14 +118,14 @@ See `rslcpp_test/executables/*.cpp` for complete, working examples.
 
 ## Repository layout
 
-- `rslcpp/`: core job interface + deterministic simulation loop
-- `rslcpp_dynamic_node_composition/`: CLI parsing + dynamic loading of ROS 2 components
-- `rslcpp_dynamic_job/`: a ready-to-use `Job` that loads components from CLI
-- `rslcpp_time_delay_backend/`: delay scheduling + delay models (fixed / measured)
-- `rslcpp_time_delay/`: a loader component that reads a CSV config and programs delays
-- `rslcpp_helper_nodes/`: reusable simulation helper nodes (monitor, bag player/recorder)
-- `rslcpp_test/`: small executables demonstrating determinism and delays
-- `rslcpp_rclcpp/`: vendored/forked ROS 2 `rclcpp`, `rclcpp_components`, `rclcpp_action`, and `rclcpp_lifecycle` packages (modified to integrate with the delay backend)
+- [`rslcpp/`](./rslcpp/): core job interface + deterministic simulation loop
+- [`rslcpp_dynamic_node_composition/`](./rslcpp_dynamic_node_composition/): CLI parsing + dynamic loading of ROS 2 components
+- [`rslcpp_dynamic_job/`](./rslcpp_dynamic_job/): a ready-to-use `Job` that loads components from CLI
+- [`rslcpp_time_delay_backend/`](./rslcpp_time_delay_backend/): delay scheduling + delay models (fixed / measured)
+- [`rslcpp_time_delay/`](./rslcpp_time_delay/): a loader component that reads a CSV config and programs delays
+- [`rslcpp_helper_nodes/`](./rslcpp_helper_nodes/): reusable simulation helper nodes (monitor, bag player/recorder)
+- [`rslcpp_test/`](./rslcpp_test/): small executables demonstrating determinism and delays
+- [`rslcpp_rclcpp/`](./rslcpp_rclcpp/): vendored/forked ROS 2 `rclcpp`, `rclcpp_components`, `rclcpp_action`, and `rclcpp_lifecycle` packages (modified to integrate with the delay backend)
 
 ## Notes & constraints
 
@@ -145,8 +145,8 @@ TBD
 
 ## Maintainers & Credits
 
-- Simon Sagmeister
-- Marcel Weinmann
-- Phillip Pitschi
+- [Simon Sagmeister](https://github.com/simonsag96)
+- [Marcel Weinmann](https://github.com/MarcelWeinmann)
+- [Phillip Pitschi](https://github.com/PhillPi)
 
 Thank also to the students who worked with the framework during their thesis and thus providing valuable input on requirements and design.
