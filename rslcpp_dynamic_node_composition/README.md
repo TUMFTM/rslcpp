@@ -2,7 +2,7 @@
 
 Dynamic loading of ROS 2 *composable nodes* (rclcpp components) from the command line.
 
-This package is used by `rslcpp_dynamic_job`, but you can also use it directly in your own `main()` if you want runtime-configurable node sets.
+This package is used by [`rslcpp_dynamic_job`](../rslcpp_dynamic_job/README.md), but you can also use it directly in your own `main()` if you want runtime-configurable node sets.
 
 ## What you get
 
@@ -10,7 +10,7 @@ This package is used by `rslcpp_dynamic_job`, but you can also use it directly i
 - `rslcpp::dynamic_composition::ComponentLoader`
 - `parse_components_from_command_line_arguments(argc, argv)`
 
-Header: `include/rslcpp_dynamic_node_composition/composition.hpp`
+Header: [`include/rslcpp_dynamic_node_composition/composition.hpp`](./include/rslcpp_dynamic_node_composition/composition.hpp)
 
 ## CLI format
 

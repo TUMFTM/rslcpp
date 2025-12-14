@@ -12,7 +12,7 @@ This package defines the `rslcpp::Job` interface and the simulation loop `rslcpp
 
 ## Core API
 
-- Header: `include/rslcpp/rslcpp.hpp`
+- Header: [`include/rslcpp/rslcpp.hpp`](./include/rslcpp/rslcpp.hpp)
   - `class rslcpp::Job` (with `Job::SharedPtr` and `Job::UniquePtr` typedefs)
   - `rslcpp::exit_code_t rslcpp::run_job(int argc, char ** argv, Job::SharedPtr job)`
 
@@ -49,7 +49,7 @@ int main(int argc, char ** argv)
 }
 ```
 
-For complete examples, see `rslcpp_test/executables/*.cpp`.
+For complete examples, see [`rslcpp_test/executables/`](../rslcpp_test/executables/).
 
 ## Important runtime expectations
 
@@ -59,6 +59,6 @@ For complete examples, see `rslcpp_test/executables/*.cpp`.
 
 ## Related packages
 
-- `rslcpp_dynamic_job`: ready-made job executable that dynamically loads composable nodes
-- `rslcpp_time_delay` + `rslcpp_time_delay_backend`: per-topic message delay configuration
-- `rslcpp_helper_nodes`: monitor / rosbag player / rosbag recorder helper nodes
+- [`rslcpp_dynamic_job`](../rslcpp_dynamic_job/README.md): ready-made job executable that dynamically loads composable nodes
+- [`rslcpp_time_delay`](../rslcpp_time_delay/README.md) + [`rslcpp_time_delay_backend`](../rslcpp_time_delay_backend/README.md): per-topic message delay configuration
+- [`rslcpp_helper_nodes`](../rslcpp_helper_nodes/README.md): monitor / rosbag player / rosbag recorder helper nodes

@@ -11,6 +11,8 @@ This package is meant as both:
 
 Built from `executables/*.cpp`:
 
+- Source directory: [`executables/`](./executables/)
+
 - `communication_delay`
   - minimal `rslcpp::Job` that runs a sender + receiver + monitor
 - `determinism`
@@ -28,5 +30,5 @@ ros2 run rslcpp_test time_delay --ros-args -p use_sim_time:=true
 
 ## Where to look next
 
-- Start with `executables/communication_delay.cpp` for the smallest “hello world” job.
-- If you want to run your own components without writing a job, see `rslcpp_dynamic_job`.
+- Start with [`executables/communication_delay.cpp`](./executables/communication_delay.cpp) for the smallest “hello world” job.
+- If you want to run your own components without writing a job, see [`rslcpp_dynamic_job`](../rslcpp_dynamic_job/README.md).

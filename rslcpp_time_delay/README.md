@@ -12,8 +12,8 @@ This package provides a composable node that reads a delay config CSV and progra
 
 Implementation:
 
-- `include/rslcpp_time_delay/time_delay_loader.hpp`
-- `components/time_delay_loader.cpp`
+- [`include/rslcpp_time_delay/time_delay_loader.hpp`](./include/rslcpp_time_delay/time_delay_loader.hpp)
+- [`components/time_delay_loader.cpp`](./components/time_delay_loader.cpp)
 
 ## Parameters
 
@@ -25,7 +25,7 @@ Declared by the node `TimeDelayLoader`:
 
 ## CSV format
 
-See `config/ExampleDelayConfig.csv`:
+See [`config/ExampleDelayConfig.csv`](./config/ExampleDelayConfig.csv):
 
 | Column | Description |
 |--------|-------------|

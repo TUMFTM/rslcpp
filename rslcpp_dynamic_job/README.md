@@ -9,7 +9,7 @@ This package provides:
 
 ## Executable
 
-- `dynamic_job` (see `executables/dynamic_job.cpp`)
+- `dynamic_job` (see [`executables/dynamic_job.cpp`](./executables/dynamic_job.cpp))
 
 ## Usage
 
@@ -47,7 +47,7 @@ These parameters are shown in the basic example above.
 
 ## Programmatic control (job backend)
 
-Header: `include/rslcpp_dynamic_job/backend.hpp`
+Header: [`include/rslcpp_dynamic_job/backend.hpp`](./include/rslcpp_dynamic_job/backend.hpp)
 
 - `rslcpp::dynamic_job::set_initial_time(rclcpp::Time)`
 - `rslcpp::dynamic_job::set_time_step_size(rclcpp::Duration)`
@@ -55,7 +55,7 @@ Header: `include/rslcpp_dynamic_job/backend.hpp`
 
 This is useful for components that want to influence the simulation without owning the main loop.
 
-For concrete usage examples of these functions from within composable nodes, see `rslcpp_helper_nodes/README.md` (e.g., `SimulationMonitor` uses `set_exit_code(...)`, and `BagPlayer` uses `set_initial_time(...)`).
+For concrete usage examples of these functions from within composable nodes, see [`rslcpp_helper_nodes/README.md`](../rslcpp_helper_nodes/README.md) (e.g., `SimulationMonitor` uses `set_exit_code(...)`, and `BagPlayer` uses `set_initial_time(...)`).
 
 ## Notes
 

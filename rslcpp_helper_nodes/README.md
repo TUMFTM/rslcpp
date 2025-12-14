@@ -18,7 +18,7 @@ Built from the `rslcpp_helper_nodes_components` library:
 
 ## SimulationMonitor
 
-Header: `include/rslcpp_helper_nodes/monitor.hpp`
+Header: [`include/rslcpp_helper_nodes/monitor.hpp`](./include/rslcpp_helper_nodes/monitor.hpp)
 
 ### What it does
 
@@ -42,7 +42,7 @@ ros2 run rslcpp_dynamic_job dynamic_job \
 
 ## BagPlayer
 
-Header: `include/rslcpp_helper_nodes/player.hpp`
+Header: [`include/rslcpp_helper_nodes/player.hpp`](./include/rslcpp_helper_nodes/player.hpp)
 
 ### Parameters
 
@@ -57,7 +57,7 @@ Header: `include/rslcpp_helper_nodes/player.hpp`
 
 ## BagRecorder
 
-Header: `include/rslcpp_helper_nodes/recorder.hpp`
+Header: [`include/rslcpp_helper_nodes/recorder.hpp`](./include/rslcpp_helper_nodes/recorder.hpp)
 
 ### Parameters
 
@@ -75,4 +75,4 @@ Header: `include/rslcpp_helper_nodes/recorder.hpp`
 ## Notes
 
 - These helpers are designed for the **single-process** simulation mode used by `rslcpp`.
-- For a working monitor example, see `rslcpp_test/executables/*.cpp`.
+- For a working monitor example, see [`rslcpp_test/executables/`](../rslcpp_test/executables/).

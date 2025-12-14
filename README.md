@@ -79,7 +79,7 @@ This uses the [`rslcpp_dynamic_job/`](./rslcpp_dynamic_job/) to load composable 
 
 If your nodes are **composable components** (registered with `RCLCPP_COMPONENTS_REGISTER_NODE(...)`), you can run them without writing a custom `main()`:
 
-See [`rslcpp_dynamic_job/Readme.md`](./rslcpp_dynamic_job/) for the full Dynamic Job documentation (including per-component arguments and more examples).
+See [`rslcpp_dynamic_job/README.md`](./rslcpp_dynamic_job/README.md) for the full Dynamic Job documentation (including per-component arguments and more examples).
 
 ```bash
 ros2 run rslcpp_dynamic_job dynamic_job \

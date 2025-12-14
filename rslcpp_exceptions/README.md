@@ -2,7 +2,7 @@
 
 Small header-only exception types used across the `rslcpp` workspace.
 
-Header: `include/rslcpp_exceptions/exceptions.hpp`
+Header: [`include/rslcpp_exceptions/exceptions.hpp`](./include/rslcpp_exceptions/exceptions.hpp)
 
 ## What you get
 
@@ -17,7 +17,7 @@ Header: `include/rslcpp_exceptions/exceptions.hpp`
 
 The header uses preprocessor macros to decide whether `conditional_throw()` actually throws.
 
-Important: `include/rslcpp_exceptions/exceptions.hpp` currently **defines default values for these macros inside the header**. That means changing behavior typically requires editing the header (or explicitly `#undef`/re-`#define` before including it in a TU).
+Important: [`include/rslcpp_exceptions/exceptions.hpp`](./include/rslcpp_exceptions/exceptions.hpp) currently **defines default values for these macros inside the header**. That means changing behavior typically requires editing the header (or explicitly `#undef`/re-`#define` before including it in a TU).
 
 | Macro | Default | Effect |
 |-------|---------|--------|

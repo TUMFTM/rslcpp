@@ -11,16 +11,16 @@ This package is used by the rest of the workspace to model communication delay *
   - `set_time(now)` and `execute_ready_publishers()`
 - `rslcpp::time_delay::DelayBackend`
   - per-topic delay model and parameters
-  - supports (see `Enums::DelayType` in `types.hpp`):
+  - supports (see `Enums::DelayType` in [`types.hpp`](./include/rslcpp_time_delay_backend/types.hpp)):
     - `NO_DELAY` – no artificial delay
     - `FIXED` – constant delay per topic (configured via CSV as `FIXED`)
     - `MEASURED_EXECUTION_TIME` – delay based on callback execution time (configured via CSV as `MEASURED`)
 
 Headers:
 
-- `include/rslcpp_time_delay_backend/callback_backend.hpp`
-- `include/rslcpp_time_delay_backend/delay_backend.hpp`
-- `include/rslcpp_time_delay_backend/types.hpp`
+- [`include/rslcpp_time_delay_backend/callback_backend.hpp`](./include/rslcpp_time_delay_backend/callback_backend.hpp)
+- [`include/rslcpp_time_delay_backend/delay_backend.hpp`](./include/rslcpp_time_delay_backend/delay_backend.hpp)
+- [`include/rslcpp_time_delay_backend/types.hpp`](./include/rslcpp_time_delay_backend/types.hpp)
 
 ## How it is used in this repo
 
@@ -37,4 +37,4 @@ Headers:
 
 ## Related package
 
-- `rslcpp_time_delay`: provides a composable node that loads a CSV config and programs `DelayBackend`.
+- [`rslcpp_time_delay`](../rslcpp_time_delay/README.md): provides a composable node that loads a CSV config and programs `DelayBackend`.
