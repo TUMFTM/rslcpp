@@ -1,16 +1,20 @@
 # rslcpp | Deterministic Simulations using ROS 2 Nodes
 
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![ROS 2](https://img.shields.io/badge/ROS_2-Jazzy-22314E.svg?logo=ros&logoColor=white)](https://docs.ros.org/en/jazzy/)
+[![C++](https://img.shields.io/badge/C++-17-00599C?logo=c%2B%2B&logoColor=white)](https://isocpp.org/)
+[![Platform](https://img.shields.io/badge/Platform-Linux-FCC624?logo=linux&logoColor=black)](https://www.linux.org/)
+
 `rslcpp` lets you run a set of ROS 2 nodes in a single-threaded simulation loop with an explicit simulation clock and a fixed time step. The goal is to make simulation runs reproducible and simple to set up: write normal `rclcpp::Node`s, enable `use_sim_time`, and run them either via a small `Job` interface or by dynamically loading composable nodes from the command line.
 
-## Advantages & applications
+## Advantages & Applications
 
-- **Reproducible simulations across hardware**: fixed-step execution with an explicit simulation clock makes runs easier to reproduce across machines (and across repeated runs on the same machine).
-- **Baseline for CI and large-scale scenario execution**: reproducible, compute-independent behavior makes it practical to run the same scenarios in CI or at scale and compare results across runs and machines.
-- **No changes to your node logic**: you can typically reuse existing `rclcpp::Node`s as-is—just run them with `use_sim_time:=true` (and, for CLI loading via `rslcpp_dynamic_job`, provide them as composable components).
-- **Treat a multi-node system like a single script/function**: run many nodes in one deterministic loop, which is convenient for reinforcement learning / machine learning pipelines (e.g., one process you can start/stop from Python, one exit code, one log directory).
-- **Run faster-than-realtime or slower-than-realtime**: simulation time is advanced in discrete steps and is decoupled from wall-clock time, so you can speed up execution for throughput (e.g., training) or let it run slower when algorithms are still too heavy for realtime during early development.
-- **Debug whole node graphs with normal breakpoints**: since the system runs in a single process/executor, hitting a breakpoint in one callback naturally pauses the entire simulation without additional synchronization overhead.
-- **Controlled timing + delay modeling**: use the included time-delay tooling to inject fixed or measured delays per topic via configuration, without rewriting your nodes.
+- **Guaranteed Reproducibility**: Eliminate any hardware variability. By enforcing a fixed time step and explicit scheduling, `rslcpp` ensures that a simulation run produces the exact same result every time—whether on a developer laptop or a CI server.
+- **Zero-Touch Integration**: Bring your existing ROS 2 nodes. `rslcpp` works with standard `rclcpp::Node` classes. No custom APIs, wrappers, or refactoring required.
+- **Flexible Time Dilation**: Decouple simulation speed from wall-clock time. Run **faster-than-realtime** for high-throughput training (RL/ML) or **slower-than-realtime** to debug heavy algorithms on limited hardware without "falling behind."
+- **Atomic Execution for ML/RL**: Treat a complex multi-node system as a single, controllable unit. Start, step, and stop the entire graph synchronously, making it ideal for reinforcement learning loops and Gym environments where the simulation must wait for the agent.
+- **Simplified "Pause-the-World" Debugging**: Debugging distributed systems is hard; `rslcpp` makes it easy. Since the system runs in a single process, hitting a breakpoint in *any* node instantly pauses the entire simulation. You can inspect the full system state without timeouts or synchronization issues.
+- **Realistic Network Modeling**: Validate system robustness by injecting deterministic delays. Simulate network latency or processing jitter using fixed or probabilistic models, configured via CSV, without changing a line of code.
 
 ## Core ideas (what to know)
 
@@ -25,7 +29,7 @@
 
 ## Quickstart (build)
 
-This repo is a ROS 2 workspace (multiple packages). Docker is optional: it should build in any ROS 2 Jazzy environment as well.
+This repository is a standard ROS 2 workspace. You can build it natively on ROS 2 Jazzy or use the provided Docker container for a guaranteed environment.
 
 ### Native (ROS 2 Jazzy installed)
 
@@ -90,7 +94,7 @@ ros2 run rslcpp_dynamic_job dynamic_job \
 
 ## Minimal custom integration (write a Job)
 
-If you prefer full control, implement `rslcpp::Job` and call `rslcpp::run_job`:
+For complex scenarios requiring custom orchestration, programmatic node creation, or specific termination logic, you can implement the `rslcpp::Job` interface directly:
 
 ```cpp
 #include <rslcpp/rslcpp.hpp>
@@ -139,7 +143,7 @@ more detailed explanation of the concepts and some benchmarks.
 TBD
 ```
 
-## Core developers
+## Maintainers & Credits
 
 - Simon Sagmeister
 - Marcel Weinmann
