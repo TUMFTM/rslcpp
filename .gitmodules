@@ -1,0 +1,3 @@
+[submodule "rslcpp_rclcpp"]
+	path = rslcpp_rclcpp
+	url = https://github.com/simonsag96/rclcpp.git
