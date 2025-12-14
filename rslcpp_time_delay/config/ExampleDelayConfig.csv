@@ -1,0 +1,5 @@
+Topic Name               , Delay Type (FIXED/MEASURED), Fixed Delay_ms, Measured Delay Skew
+/fixed_delay_1           , FIXED                      ,             10,                  
+/fixed_delay_2           , FIXED                      ,            300,                  
+/measured_delay          , MEASURED                   ,               ,                 1.0
+/measured_delay_with_skew, MEASURED                   ,               ,                 0.5
