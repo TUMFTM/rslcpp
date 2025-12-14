@@ -5,7 +5,7 @@
 [![C++](https://img.shields.io/badge/C++-17-00599C?logo=c%2B%2B&logoColor=white)](https://isocpp.org/)
 [![Platform](https://img.shields.io/badge/Platform-Linux-FCC624?logo=linux&logoColor=black)](https://www.linux.org/)
 
-`rslcpp` - the ros simulation library for C++ - lets you run a set of ROS 2 nodes in a single-threaded simulation loop with an explicit simulation clock and a fixed time step. The goal is to make simulation runs reproducible and simple to set up: write normal `rclcpp::Node`s, enable `use_sim_time`, and run them either via a small `Job` interface or by dynamically loading composable nodes from the command line.
+`rslcpp` - the ros simulation library for C++ - lets you run a set of ROS 2 nodes in a single-threaded simulation loop with an explicit simulation clock and a fixed time step. The goal is to make simulation runs reproducible and simple to set up: write normal `rclcpp::Node` classes, enable `use_sim_time`, and run them either via a small `Job` interface or by dynamically loading composable nodes from the command line.
 
 ## Advantages & Applications
 
@@ -75,11 +75,11 @@ ros2 run rslcpp_test communication_delay --ros-args -p use_sim_time:=true
 
 ## 5 minutes: run *your* nodes (no custom main)
 
-This uses the **Dynamic Job** (`rslcpp_dynamic_job`) to load composable nodes at runtime.
+This uses the [`rslcpp_dynamic_job/`](./rslcpp_dynamic_job/) to load composable nodes at runtime.
 
 If your nodes are **composable components** (registered with `RCLCPP_COMPONENTS_REGISTER_NODE(...)`), you can run them without writing a custom `main()`:
 
-See `rslcpp_dynamic_job/README.md` for the full Dynamic Job documentation (including per-component arguments and more examples).
+See [`rslcpp_dynamic_job/Readme.md`](./rslcpp_dynamic_job/) for the full Dynamic Job documentation (including per-component arguments and more examples).
 
 ```bash
 ros2 run rslcpp_dynamic_job dynamic_job \
@@ -114,7 +114,7 @@ int main(int argc, char ** argv) {
 }
 ```
 
-See `rslcpp_test/executables/*.cpp` for complete, working examples.
+See [`rslcpp_test/executables/*.cpp`](./rslcpp_test/executables/) for complete, working examples.
 
 ## Repository layout
 
@@ -132,7 +132,7 @@ See `rslcpp_test/executables/*.cpp` for complete, working examples.
 - `rslcpp` expects all nodes to run with `use_sim_time:=true` (it will refuse to run otherwise).
 - The intended mode is **single-process** execution (intra-process communication enabled). Mixing in multi-process/DDS communication can reduce determinism.
 - Cyclic pub/sub chains that “feed themselves” without any timer or other time-driven trigger can deadlock the simulation (no new events become ready for the executor).
-- **Modified rclcpp**: This workspace includes a custom version of `rclcpp` (`rslcpp_rclcpp/`) to enable the time-delay backend. It is API-compatible with standard `rclcpp`, so no code changes are needed in your nodes, but it must be used for the delay features to function.
+- **Modified rclcpp**: This workspace includes a custom version of [`rclcpp/`](./rslcpp_rclcpp/) to enable the time-delay backend. It is API-compatible with standard `rclcpp`, so no code changes are needed in your nodes, but it must be used for the delay features to function.
 
 ## References
 
