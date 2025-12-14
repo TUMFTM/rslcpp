@@ -1,4 +1,4 @@
-# rslcpp | Deterministic Simulations using ROS 2 Nodes
+# rslcpp | Deterministic Simulations using ROS 2
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![ROS 2](https://img.shields.io/badge/ROS_2-Jazzy-22314E.svg?logo=ros&logoColor=white)](https://docs.ros.org/en/jazzy/)
