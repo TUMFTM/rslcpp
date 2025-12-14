@@ -111,9 +111,10 @@ See `rslcpp_test/executables/*.cpp` for complete, working examples.
 - `rslcpp_time_delay/`: a loader component that reads a CSV config and programs delays
 - `rslcpp_helper_nodes/`: reusable simulation helper nodes (monitor, bag player/recorder)
 - `rslcpp_test/`: small executables demonstrating determinism and delays
-- `rslcpp_rclcpp/`: vendored/forked ROS 2 `rclcpp`/`rclcpp_components` used by this workspace
+- `rslcpp_rclcpp/`: vendored/forked ROS 2 `rclcpp`, `rclcpp_components`, `rclcpp_action`, and `rclcpp_lifecycle` packages (modified to integrate with the delay backend)
 
 ## Notes & constraints
 
 - `rslcpp` expects all nodes to run with `use_sim_time:=true` (it will refuse to run otherwise).
 - The intended mode is **single-process** execution (intra-process communication enabled). Mixing in multi-process/DDS communication can reduce determinism.
+- This workspace includes a **vendored fork of rclcpp** (`rslcpp_rclcpp/`) that integrates with the delay backend. You must build and use this vendored version for the delay features to work correctly.

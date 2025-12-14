@@ -27,10 +27,12 @@ Declared by the node `TimeDelayLoader`:
 
 See `config/ExampleDelayConfig.csv`:
 
-- `Topic Name`
-- `Delay Type` (`FIXED` or `MEASURED`)
-- `Fixed Delay_ms` (milliseconds; converted to nanoseconds internally)
-- `Measured Delay Skew` (unitless multiplier)
+| Column | Description |
+|--------|-------------|
+| `Topic Name` | The ROS topic name |
+| `Delay Type (FIXED/MEASURED)` | Either `FIXED` or `MEASURED` |
+| `Fixed Delay_ms` | Delay in milliseconds (for `FIXED` type; converted to nanoseconds internally) |
+| `Measured Delay Skew` | Unitless multiplier (for `MEASURED` type) |
 
 ## Usage with `rslcpp_dynamic_job`
 

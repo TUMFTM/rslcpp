@@ -19,9 +19,10 @@ The header uses preprocessor macros to decide whether `conditional_throw()` actu
 
 Important: `include/rslcpp_exceptions/exceptions.hpp` currently **defines default values for these macros inside the header**. That means changing behavior typically requires editing the header (or explicitly `#undef`/re-`#define` before including it in a TU).
 
-- `RSLCPP_ACTIVATE_EXCEPTIONS`
-  - gates `RSLCPP_INTERNAL_THROW_EXCEPTION(...)`
-- `RSLCPP_DEACTIVATE_NONIPC`
-- `RSLCPP_DEACTIVATE_UNSUPPORTED`
+| Macro | Default | Effect |
+|-------|---------|--------|
+| `RSLCPP_ACTIVATE_EXCEPTIONS` | **defined** | Enables `RSLCPP_INTERNAL_THROW_EXCEPTION(...)` |
+| `RSLCPP_DEACTIVATE_NONIPC` | **defined** | Suppresses `NonIntraProcessCommunication` exceptions |
+| `RSLCPP_DEACTIVATE_UNSUPPORTED` | *not defined* | When defined, suppresses `UnsupportedTimeDelayFeature` exceptions |
 
-These switches are intended to allow “warn-only” modes during experimentation.
+These switches are intended to allow "warn-only" modes during experimentation.

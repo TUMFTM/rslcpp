@@ -11,10 +11,10 @@ This package is used by the rest of the workspace to model communication delay *
   - `set_time(now)` and `execute_ready_publishers()`
 - `rslcpp::time_delay::DelayBackend`
   - per-topic delay model and parameters
-  - supports:
-    - `NO_DELAY`
-    - `FIXED`
-    - `MEASURED_EXECUTION_TIME`
+  - supports (see `Enums::DelayType` in `types.hpp`):
+    - `NO_DELAY` – no artificial delay
+    - `FIXED` – constant delay per topic (configured via CSV as `FIXED`)
+    - `MEASURED_EXECUTION_TIME` – delay based on callback execution time (configured via CSV as `MEASURED`)
 
 Headers:
 

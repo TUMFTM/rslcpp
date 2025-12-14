@@ -12,8 +12,8 @@ This package defines the `rslcpp::Job` interface and the simulation loop `rslcpp
 
 ## Core API
 
-- Header: `rslcpp/include/rslcpp/rslcpp.hpp`
-  - `class rslcpp::Job`
+- Header: `include/rslcpp/rslcpp.hpp`
+  - `class rslcpp::Job` (with `Job::SharedPtr` and `Job::UniquePtr` typedefs)
   - `rslcpp::exit_code_t rslcpp::run_job(int argc, char ** argv, Job::SharedPtr job)`
 
 ### `Job` responsibilities
