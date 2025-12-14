@@ -13,13 +13,16 @@ This package provides:
 
 ## Usage
 
-### Load components
+### Load components (basic)
 
 ```bash
 ros2 run rslcpp_dynamic_job dynamic_job \
   --component <package_name> <fully_qualified_component_class> \
   --component <package_name> <fully_qualified_component_class> \
-  --ros-args -p use_sim_time:=true
+  --ros-args \
+    -p use_sim_time:=true \
+    -p initial_time_ns_since_epoch:=0 \
+    -p time_step_size_ns:=1000000
 ```
 
 ### Component-local ROS args
@@ -40,16 +43,7 @@ ros2 run rslcpp_dynamic_job dynamic_job \
 - `initial_time_ns_since_epoch` (int)
 - `time_step_size_ns` (int)
 
-Example:
-
-```bash
-ros2 run rslcpp_dynamic_job dynamic_job \
-  --component <pkg> <Component> \
-  --ros-args \
-    -p use_sim_time:=true \
-    -p initial_time_ns_since_epoch:=0 \
-    -p time_step_size_ns:=1000000
-```
+These parameters are shown in the basic example above.
 
 ## Programmatic control (job backend)
 
@@ -60,6 +54,8 @@ Header: `include/rslcpp_dynamic_job/backend.hpp`
 - `rslcpp::dynamic_job::set_exit_code(uint8_t)` (also marks the job finished)
 
 This is useful for components that want to influence the simulation without owning the main loop.
+
+For concrete usage examples of these functions from within composable nodes, see `rslcpp_helper_nodes/README.md` (e.g., `SimulationMonitor` uses `set_exit_code(...)`, and `BagPlayer` uses `set_initial_time(...)`).
 
 ## Notes
 

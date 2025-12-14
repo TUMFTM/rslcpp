@@ -1,30 +1,54 @@
-# rslcpp
-
-Deterministic, step-based simulation runtime for ROS 2 C++ nodes.
+# rslcpp | Deterministic Simulations using ROS 2 Nodes
 
 `rslcpp` lets you run a set of ROS 2 nodes in a single-threaded simulation loop with an explicit simulation clock and a fixed time step. The goal is to make simulation runs reproducible and simple to set up: write normal `rclcpp::Node`s, enable `use_sim_time`, and run them either via a small `Job` interface or by dynamically loading composable nodes from the command line.
 
+## Advantages & applications
+
+- **Reproducible simulations across hardware**: fixed-step execution with an explicit simulation clock makes runs easier to reproduce across machines (and across repeated runs on the same machine).
+- **Baseline for CI and large-scale scenario execution**: reproducible, compute-independent behavior makes it practical to run the same scenarios in CI or at scale and compare results across runs and machines.
+- **No changes to your node logic**: you can typically reuse existing `rclcpp::Node`s as-is—just run them with `use_sim_time:=true` (and, for CLI loading via `rslcpp_dynamic_job`, provide them as composable components).
+- **Treat a multi-node system like a single script/function**: run many nodes in one deterministic loop, which is convenient for reinforcement learning / machine learning pipelines (e.g., one process you can start/stop from Python, one exit code, one log directory).
+- **Run faster-than-realtime or slower-than-realtime**: simulation time is advanced in discrete steps and is decoupled from wall-clock time, so you can speed up execution for throughput (e.g., training) or let it run slower when algorithms are still too heavy for realtime during early development.
+- **Debug whole node graphs with normal breakpoints**: since the system runs in a single process/executor, hitting a breakpoint in one callback naturally pauses the entire simulation without additional synchronization overhead.
+- **Controlled timing + delay modeling**: use the included time-delay tooling to inject fixed or measured delays per topic via configuration, without rewriting your nodes.
+
 ## Core ideas (what to know)
 
-- **Job**: you provide a `rslcpp::Job` which
-  - creates all nodes for the simulation,
-  - defines **initial sim time** and **time step size**,
-  - decides when the simulation is finished and what exit code to return.
-- **Simulation clock**: `rslcpp` overwrites each node’s ROS time every tick (so timers/subscriptions run against simulation time). Nodes must run with `use_sim_time:=true`.
-- **Deterministic callback execution**: the runtime drives an events-based executor and advances time in fixed steps.
-- **Optional topic delays**: this repo includes a time-delay backend and a small loader node that reads a CSV and applies per-topic delays.
-- **Dynamic composition**: you can run your nodes without writing a custom `main()` by loading ROS 2 components at runtime.
+- **Job**: The central entry point (`rslcpp::Job`) that orchestrates the simulation. It is responsible for:
+  - Instantiating all participating nodes.
+  - Defining the **initial simulation time** and the fixed **time step size**.
+  - Determining the termination condition and the final exit code.
+- **Simulation clock**: `rslcpp` takes control of time. It updates the ROS time for all nodes at each step, ensuring that timers and subscriptions execute based on simulation time, not wall-clock time. (Requires `use_sim_time:=true`).
+- **Deterministic callback execution**: The runtime drives a custom executor that processes events and advances time in discrete, fixed steps.
+- **Optional topic delays**: The framework includes a backend for injecting communication delays. A loader node can read a CSV configuration to apply fixed or probabilistic delays to specific topics.
+- **Dynamic composition**: Run existing nodes without writing a custom `main()` function by loading them as ROS 2 components at runtime via the CLI.
 
 ## Quickstart (build)
 
-This repo is a ROS 2 workspace (multiple packages). The simplest way to build is inside a ROS container.
+This repo is a ROS 2 workspace (multiple packages). Docker is optional: it should build in any ROS 2 Jazzy environment as well.
+
+### Native (ROS 2 Jazzy installed)
 
 ```bash
+source /opt/ros/jazzy/setup.bash
+
+# Note: building tests may require extra deps for the vendored rclcpp.
+colcon build --cmake-args -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Release
+
+source install/setup.bash
+```
+
+### Docker (convenient, reproducible)
+
+```bash
+# Start the container
 docker run -it --rm \
   -v "$(pwd)":/dev_ws/src \
   -w /dev_ws \
   ros:jazzy \
   bash
+
+# Everything following will be done inside the container
 
 source /opt/ros/jazzy/setup.bash
 
@@ -35,47 +59,33 @@ colcon build --cmake-args -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Release
 source install/setup.bash
 ```
 
-## 5 minutes: run a deterministic job
+## 2 minutes: run a deterministic job
 
 The repository ships small example executables in `rslcpp_test`.
 
 ```bash
-ros2 run rslcpp_test communication_delay --ros-args -p use_sim_time:=true
 ros2 run rslcpp_test determinism --ros-args -p use_sim_time:=true
 ros2 run rslcpp_test time_delay --ros-args -p use_sim_time:=true
+ros2 run rslcpp_test communication_delay --ros-args -p use_sim_time:=true
 ```
 
 ## 5 minutes: run *your* nodes (no custom main)
 
-If your nodes are **composable components** (registered with `RCLCPP_COMPONENTS_REGISTER_NODE(...)`), you can load them via `rslcpp_dynamic_job`:
+This uses the **Dynamic Job** (`rslcpp_dynamic_job`) to load composable nodes at runtime.
+
+If your nodes are **composable components** (registered with `RCLCPP_COMPONENTS_REGISTER_NODE(...)`), you can run them without writing a custom `main()`:
+
+See `rslcpp_dynamic_job/README.md` for the full Dynamic Job documentation (including per-component arguments and more examples).
 
 ```bash
 ros2 run rslcpp_dynamic_job dynamic_job \
   --component <package_name> <fully_qualified_component_class> \
   --component <package_name> <fully_qualified_component_class> \
-  --ros-args -p use_sim_time:=true
-```
-
-Per-component parameters/remaps are supported via `--component-ros-args` (see `rslcpp_dynamic_node_composition`):
-
-```bash
-ros2 run rslcpp_dynamic_job dynamic_job \
-  --component rslcpp_time_delay rslcpp_time_delay::TimeDelayLoader \
-  --component-ros-args -p delay_config_file_path:=/abs/path/to/config.csv \
-  --component rslcpp_helper_nodes rslcpp_helper_nodes::SimulationMonitor \
-  --component-ros-args -p timeout_s:=10 \
-  --ros-args -p use_sim_time:=true
-```
-
-You can configure the simulation loop itself (initial time + time step) using ROS parameters consumed by `rslcpp_dynamic_job`:
-
-```bash
-ros2 run rslcpp_dynamic_job dynamic_job \
-  --component <pkg> <Component> \
   --ros-args \
     -p use_sim_time:=true \
     -p initial_time_ns_since_epoch:=0 \
-    -p time_step_size_ns:=1000000
+    -p time_step_size_ns:=1000000 \
+    --params-file <parameter-file>
 ```
 
 ## Minimal custom integration (write a Job)
@@ -117,4 +127,22 @@ See `rslcpp_test/executables/*.cpp` for complete, working examples.
 
 - `rslcpp` expects all nodes to run with `use_sim_time:=true` (it will refuse to run otherwise).
 - The intended mode is **single-process** execution (intra-process communication enabled). Mixing in multi-process/DDS communication can reduce determinism.
-- This workspace includes a **vendored fork of rclcpp** (`rslcpp_rclcpp/`) that integrates with the delay backend. You must build and use this vendored version for the delay features to work correctly.
+- Cyclic pub/sub chains that “feed themselves” without any timer or other time-driven trigger can deadlock the simulation (no new events become ready for the executor).
+- **Modified rclcpp**: This workspace includes a custom version of `rclcpp` (`rslcpp_rclcpp/`) to enable the time-delay backend. It is API-compatible with standard `rclcpp`, so no code changes are needed in your nodes, but it must be used for the delay features to function.
+
+## References
+
+If you use `rslcpp` in your work, please consider citing our paper. This also contains
+more detailed explanation of the concepts and some benchmarks.
+
+```bibtex
+TBD
+```
+
+## Core developers
+
+- Simon Sagmeister
+- Marcel Weinmann
+- Phillip Pitschi
+
+Thank also to the students who worked with the framework during their thesis and thus providing valuable input on requirements and design.
