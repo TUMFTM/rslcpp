@@ -16,7 +16,6 @@
 class TestJob : public rslcpp::Job
 {
   std::uint8_t get_exit_code() override { return exit_code_; }
-  rclcpp::Duration get_time_step_size() override { return std::chrono::microseconds(100); }
   bool get_finished() override { return finished_; }
   rclcpp::Time get_initial_time() override { return rclcpp::Time(10, 0, RCL_ROS_TIME); }
   std::vector<rclcpp::Node::SharedPtr> create_and_get_nodes() override

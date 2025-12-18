@@ -2,6 +2,7 @@
 
 #include "rslcpp/rslcpp.hpp"
 
+#include <limits>
 #include <rslcpp_exceptions/exceptions.hpp>
 namespace rslcpp
 {
@@ -39,7 +40,6 @@ exit_code_t run_job(int argc, char ** argv, Job::SharedPtr job)
   }
 
   auto sim_time = job->get_initial_time();
-  auto time_step = job->get_time_step_size();
 
   // Do the simulation loop
   // The second conditions allows to manually break the loop on ctrl + c
@@ -58,12 +58,32 @@ exit_code_t run_job(int argc, char ** argv, Job::SharedPtr job)
     // the callbacks are executed in the order they get ready.
     // It is also garantueed that all callbacks that would ever be ready at this time step are
     // executed.
-    executor.spin_all(std::chrono::hours(
-      200 * 365 * 24));  // Large timeout of 200 years to ensure all callbacks are executed since
-                         // setting 0 ns to imply infinite timeout does not work with the current
-                         // implementation of the events executor.
-    // Advance the simulation time
-    sim_time += time_step;
+    executor.spin_all(
+      std::chrono::hours(
+        200 * 365 * 24));  // Large timeout of 200 years to ensure all callbacks are executed since
+                           // setting 0 ns to imply infinite timeout does not work with the current
+                           // implementation of the events executor.
+
+    /// Get the time until the the next timer.
+    std::chrono::nanoseconds time_until_next_timer = executor.get_time_until_next_timer();
+
+    if (time_until_next_timer == std::chrono::nanoseconds::max()) {
+      // No more timers are scheduled, we can end the simulation
+      break;
+    }
+
+    // Get the time until the next delayed callback
+    rslcpp::time_delay::Duration time_until_next_delayed_callback =
+      time_delay_backend.get_time_until_next_callback();
+
+    // Use ternary operator to get the minimum duration for the next time step
+    rclcpp::Duration time_step_duration =
+      (time_until_next_delayed_callback < time_until_next_timer.count())
+        ? std::chrono::nanoseconds(time_until_next_delayed_callback)
+        : time_until_next_timer;
+
+    // Advance the simulation time by the time until the next timer
+    sim_time += time_step_duration;
     // Set the simulation time for all clocks
   }
   auto exit_code = job->get_exit_code();

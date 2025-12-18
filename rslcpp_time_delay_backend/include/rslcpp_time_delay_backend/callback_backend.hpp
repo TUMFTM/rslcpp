@@ -49,6 +49,7 @@ public:
   void add_delayed_callable(DelayedCallable && callable);
   void execute_ready_publishers();
   void set_time(Time current_time);
+  Duration get_time_until_next_callback();
 
 private:
   Time current_time_{0};

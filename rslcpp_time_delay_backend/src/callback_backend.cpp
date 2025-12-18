@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <limits>
 namespace rslcpp::time_delay
 {
 void CallbackBackend::add_delayed_callable(DelayedCallable && delayed_callable)
@@ -34,4 +35,15 @@ void CallbackBackend::execute_ready_publishers()
   }
 }
 void CallbackBackend::set_time(Time current_time) { current_time_ = current_time; }
+Duration CallbackBackend::get_time_until_next_callback()
+{
+  if (callables_.empty()) {
+    return std::numeric_limits<Duration>::max();
+  }
+  Time next_callback_time = callables_.front().get_callback_execution_time();
+  if (next_callback_time <= current_time_) {
+    return Duration(0);
+  }
+  return next_callback_time - current_time_;
+}
 }  // namespace rslcpp::time_delay

@@ -5,7 +5,7 @@
 namespace rslcpp::time_delay
 {
 using Time = std::uint64_t;
-using Duration = std::uint64_t;
+using Duration = std::int64_t;
 namespace Enums
 {
 enum DelayType { NO_DELAY, FIXED, MEASURED_EXECUTION_TIME };

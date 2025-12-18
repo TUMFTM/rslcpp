@@ -38,7 +38,6 @@ std::vector<rclcpp::Node::SharedPtr> DynamicJob::create_and_get_nodes()
   return return_val;
 }
 rclcpp::Time DynamicJob::get_initial_time() { return internal::get_initial_time(); }
-rclcpp::Duration DynamicJob::get_time_step_size() { return internal::get_time_step_size(); }
 bool DynamicJob::get_finished() { return internal::get_finished(); }
 exit_code_t DynamicJob::get_exit_code() { return internal::get_exit_code(); }
 void DynamicJob::set_pre_node_creation_callback(std::function<void()> && callback)
@@ -79,12 +78,6 @@ void DynamicJob::set_default_configuration_from_ros_parameters()
     set_initial_time(rclcpp::Time(initial_time));
     std::cout << "Dynamic Job | Initial time set via parameter to: " << initial_time
               << " ns since epoch" << std::endl;
-  }
-  if (param_loader_node->has_parameter("time_step_size_ns")) {
-    auto time_step_size = param_loader_node->get_parameter("time_step_size_ns").as_int();
-    set_time_step_size(rclcpp::Duration(std::chrono::nanoseconds(time_step_size)));
-    std::cout << "Dynamic Job | Time step size set via parameter to: " << time_step_size << "ns"
-              << std::endl;
   }
 
   param_loader_node = nullptr;  // Ensure the node is destroyed to free resources
