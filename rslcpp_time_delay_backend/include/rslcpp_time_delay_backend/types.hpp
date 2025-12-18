@@ -2,6 +2,7 @@
 #pragma once
 #include <cstdint>
 #include <memory>
+#include <utility>
 namespace rslcpp::time_delay
 {
 using Time = std::uint64_t;
