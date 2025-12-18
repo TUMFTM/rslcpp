@@ -3,7 +3,7 @@
 #include <chrono>
 #include <functional>
 #include <rclcpp/rclcpp.hpp>
-#include <std_msgs/msg/u_int8.hpp>
+#include <std_msgs/msg/bool.hpp>
 // Helper nodes
 namespace rslcpp::helper_nodes
 {
@@ -18,9 +18,9 @@ public:
   }
 
 private:
-  void error_code_callback(const std_msgs::msg::UInt8::SharedPtr msg)
-  {
-    abort_simulation_callback_(msg->data);
+  void shutdown_callback(const std_msgs::msg::Bool::SharedPtr msg)
+  { 
+    if (msg->data) abort_simulation_callback_(0); 
   }
   void timer_callback()
   {
@@ -46,9 +46,9 @@ private:
     this, this->get_clock(), std::chrono::seconds(1),
     std::bind(&SimulationMonitor::timer_callback, this));
 
-  rclcpp::Subscription<std_msgs::msg::UInt8>::SharedPtr sub_error_ =
-    this->create_subscription<std_msgs::msg::UInt8>(
-      "/rslcpp/error_code", 1,
-      std::bind(&SimulationMonitor::error_code_callback, this, std::placeholders::_1));
+  rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr sub_error_ =
+    this->create_subscription<std_msgs::msg::Bool>(
+      "/rslcpp/shutdown", 1,
+      std::bind(&SimulationMonitor::shutdown_callback, this, std::placeholders::_1));
 };
 }  // namespace rslcpp::helper_nodes
