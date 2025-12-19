@@ -8,7 +8,7 @@ This package is used by the rest of the workspace to model communication delay *
 
 - `rslcpp::time_delay::CallbackBackend`
   - stores a time-ordered list of delayed callables
-  - `set_time(now)` and `execute_ready_publishers()`
+  - `set_time(now)` and `execute_ready_delayed_callables()`
 - `rslcpp::time_delay::DelayBackend`
   - per-topic delay model and parameters
   - supports (see `Enums::DelayType` in [`types.hpp`](./include/rslcpp_time_delay_backend/types.hpp)):
@@ -24,7 +24,7 @@ Headers:
 
 ## How it is used in this repo
 
-- The `rslcpp` simulation loop calls `CallbackBackend::set_time(sim_time)` once per tick and then calls `CallbackBackend::execute_ready_publishers()`.
+- The `rslcpp` simulation loop calls `CallbackBackend::set_time(sim_time)` once per tick and then calls `CallbackBackend::execute_ready_delayed_callables()`.
 - The vendored `rclcpp` in this workspace integrates with the backend by scheduling publishes via `CallbackBackend` using a delay computed from `DelayBackend` for the publisher topic.
 
 ## Delay configuration API

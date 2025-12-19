@@ -51,7 +51,7 @@ exit_code_t run_job(int argc, char ** argv, Job::SharedPtr job)
       rslcpp::set_clock(sim_time, node->get_clock());
     }
     // Execute ready delayed publishers
-    time_delay_backend.execute_ready_publishers();
+    time_delay_backend.execute_ready_delayed_callables();
 
     // Execute all callbacks until none is ready
     // Since we only have a single thread with IPC communication only, it is garantueed that
@@ -79,7 +79,7 @@ exit_code_t run_job(int argc, char ** argv, Job::SharedPtr job)
 
     // Get the time until the next delayed callback
     rslcpp::time_delay::Duration time_until_next_delayed_callback =
-      time_delay_backend.get_time_until_next_callback();
+      time_delay_backend.get_time_until_next_delayed_callable();
 
     // Use ternary operator to get the minimum duration for the next time step
     rclcpp::Duration time_step_duration =
