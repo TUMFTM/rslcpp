@@ -1,6 +1,9 @@
 // Copyright 2025 Simon Sagmeister
 #pragma once
 #include <cstdint>
+/// @brief SplitMix64 hashing function
+/// @note Taken from https://prng.di.unimi.it/splitmix64.c
+/// @note See http://dx.doi.org/10.1145/2714064.2660195
 uint64_t splitmix64(uint64_t x)
 {
   x += 0x9e3779b97f4a7c15;
@@ -17,6 +20,8 @@ uint64_t hash(uint64_t value) { return splitmix64(value); }
 /// @param h1 First hash value.
 /// @param h2 Second hash value.
 /// @return Combined hash value.
+/// @note Adopted from
+/// https://github.com/google/cityhash/blob/f5dc54147fcce12cefd16548c8e760d68ac04226/src/city.h#L101
 uint64_t hash_combine(uint64_t h1, uint64_t h2)
 {
   const uint64_t k = 0x9ddfea08eb382d69ULL;  // large mixing constant
