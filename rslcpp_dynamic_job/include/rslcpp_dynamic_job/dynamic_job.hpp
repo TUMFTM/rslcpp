@@ -18,7 +18,6 @@ public:
 
   std::vector<rclcpp::Node::SharedPtr> create_and_get_nodes() override;
   rclcpp::Time get_initial_time() override;
-  rclcpp::Duration get_time_step_size() override;
   bool get_finished() override;
   exit_code_t get_exit_code() override;
 

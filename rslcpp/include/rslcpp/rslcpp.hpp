@@ -26,8 +26,6 @@ public:
   virtual std::vector<rclcpp::Node::SharedPtr> create_and_get_nodes() = 0;
   /// @brief Get the initial simulation time
   virtual rclcpp::Time get_initial_time() = 0;
-  /// @brief  Get the time step size. This is the clock "tick" of the simulation
-  virtual rclcpp::Duration get_time_step_size() = 0;
   /// @brief Return true to stop the simulation. As a result, all the nodes created above will be
   /// destroyed.
   virtual bool get_finished() = 0;

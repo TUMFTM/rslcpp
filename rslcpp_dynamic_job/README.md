@@ -21,8 +21,7 @@ ros2 run rslcpp_dynamic_job dynamic_job \
   --component <package_name> <fully_qualified_component_class> \
   --ros-args \
     -p use_sim_time:=true \
-    -p initial_time_ns_since_epoch:=0 \
-    -p time_step_size_ns:=1000000
+    -p initial_time_ns_since_epoch:=0
 ```
 
 ### Component-local ROS args
@@ -41,7 +40,6 @@ ros2 run rslcpp_dynamic_job dynamic_job \
 `DynamicJob` reads (optional) parameters at node creation time and forwards them to the internal job backend:
 
 - `initial_time_ns_since_epoch` (int)
-- `time_step_size_ns` (int)
 
 These parameters are shown in the basic example above.
 
@@ -50,7 +48,6 @@ These parameters are shown in the basic example above.
 Header: [`include/rslcpp_dynamic_job/backend.hpp`](./include/rslcpp_dynamic_job/backend.hpp)
 
 - `rslcpp::dynamic_job::set_initial_time(rclcpp::Time)`
-- `rslcpp::dynamic_job::set_time_step_size(rclcpp::Duration)`
 - `rslcpp::dynamic_job::set_exit_code(uint8_t)` (also marks the job finished)
 
 This is useful for components that want to influence the simulation without owning the main loop.

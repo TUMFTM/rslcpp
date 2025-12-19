@@ -12,8 +12,6 @@ class TestJob : public rslcpp::Job
 {
   /// @brief Return the exit code of the simulation. This will be called after stopping the job.
   std::uint8_t get_exit_code() override { return exit_code_; }
-  /// @brief Return the time step size. This is the clock "tick" of the simulation
-  rclcpp::Duration get_time_step_size() override { return std::chrono::microseconds(1000); }
   /// @brief Get whether the simulation is finished
   bool get_finished() override { return finished_; }
   /// @brief Return the initial time of the simulation

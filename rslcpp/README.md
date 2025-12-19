@@ -22,7 +22,6 @@ Your implementation provides:
 
 - `create_and_get_nodes()`: create all nodes and return them.
 - `get_initial_time()`: initial simulation time (`rclcpp::Time`).
-- `get_time_step_size()`: fixed time step (`rclcpp::Duration`).
 - `get_finished()`: when to stop.
 - `get_exit_code()`: exit code returned after the loop.
 
@@ -37,7 +36,6 @@ class MyJob : public rslcpp::Job {
 public:
   std::vector<rclcpp::Node::SharedPtr> create_and_get_nodes() override;
   rclcpp::Time get_initial_time() override;
-  rclcpp::Duration get_time_step_size() override;
   bool get_finished() override;
   rslcpp::exit_code_t get_exit_code() override;
 };

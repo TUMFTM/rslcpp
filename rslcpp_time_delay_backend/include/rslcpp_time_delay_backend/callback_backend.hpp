@@ -47,8 +47,9 @@ private:
   // Actual API
 public:
   void add_delayed_callable(DelayedCallable && callable);
-  void execute_ready_publishers();
+  void execute_ready_delayed_callables();
   void set_time(Time current_time);
+  Duration get_time_until_next_delayed_callable();
 
 private:
   Time current_time_{0};

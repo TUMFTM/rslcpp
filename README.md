@@ -6,11 +6,11 @@
 [![Ubuntu](https://img.shields.io/badge/Ubuntu-24.04-E95420?logo=ubuntu&logoColor=white)](https://ubuntu.com/)
 [![DOI](https://img.shields.io/badge/DOI-TBD-blue)](#references)
 
-`rslcpp` - the ros simulation library for C++ - lets you run a set of ROS 2 nodes in a single-threaded simulation loop with an explicit simulation clock and a fixed time step. The goal is to make simulation runs reproducible and simple to set up: write normal `rclcpp::Node` classes, enable `use_sim_time`, and run them either via a small `Job` interface or by dynamically loading composable nodes from the command line.
+`rslcpp` - the ros simulation library for C++ - lets you run a set of ROS 2 nodes in a single-threaded simulation loop with an explicit simulation clock. The goal is to make simulation runs reproducible and simple to set up: write normal `rclcpp::Node` classes, enable `use_sim_time`, and run them either via a small `Job` interface or by dynamically loading composable nodes from the command line.
 
 ## Advantages & Applications
 
-- **Guaranteed Reproducibility**: Eliminate any hardware variability. By enforcing a fixed time step and explicit scheduling, `rslcpp` ensures that a simulation run produces the exact same result every time—whether on a developer laptop or a CI server.
+- **Guaranteed Reproducibility**: Eliminate any hardware variability. By enforcing an explicit simulation clock and deterministic scheduling, `rslcpp` ensures that a simulation run produces the exact same result every time—whether on a developer laptop or a CI server.
 - **Zero-Touch Integration**: Bring your existing ROS 2 nodes. `rslcpp` works with standard `rclcpp::Node` classes. No custom APIs, wrappers, or refactoring required.
 - **Flexible Time Dilation**: Decouple simulation speed from wall-clock time. Run **faster-than-realtime** for high-throughput training (RL/ML) or **slower-than-realtime** to debug heavy algorithms on limited hardware without "falling behind."
 - **Atomic Execution for ML/RL**: Treat a complex multi-node system as a single, controllable unit. Start, step, and stop the entire graph synchronously, making it ideal for reinforcement learning loops and Gym environments where the simulation must wait for the agent.
@@ -21,10 +21,10 @@
 
 - **Job**: The central entry point (`rslcpp::Job`) that orchestrates the simulation. It is responsible for:
   - Instantiating all participating nodes.
-  - Defining the **initial simulation time** and the fixed **time step size**.
+  - Defining the **initial simulation time**.
   - Determining the termination condition and the final exit code.
 - **Simulation clock**: `rslcpp` takes control of time. It updates the ROS time for all nodes at each step, ensuring that timers and subscriptions execute based on simulation time, not wall-clock time. (Requires `use_sim_time:=true`).
-- **Deterministic callback execution**: The runtime drives a custom executor that processes events and advances time in discrete, fixed steps.
+- **Deterministic callback execution**: The runtime drives a custom executor that processes events and advances simulation time to the next scheduled event (e.g., the next timer or delayed callback).
 - **Optional topic delays**: The framework includes a backend for injecting communication delays. A loader node can read a CSV configuration to apply fixed or probabilistic delays to specific topics.
 - **Dynamic composition**: Run existing nodes without writing a custom `main()` function by loading them as ROS 2 components at runtime via the CLI.
 
@@ -89,7 +89,6 @@ ros2 run rslcpp_dynamic_job dynamic_job \
   --ros-args \
     -p use_sim_time:=true \
     -p initial_time_ns_since_epoch:=0 \
-    -p time_step_size_ns:=1000000 \
     --params-file <parameter-file>
 ```
 
@@ -104,7 +103,6 @@ class MyJob : public rslcpp::Job {
 public:
   std::vector<rclcpp::Node::SharedPtr> create_and_get_nodes() override;
   rclcpp::Time get_initial_time() override;
-  rclcpp::Duration get_time_step_size() override;
   bool get_finished() override;
   rslcpp::exit_code_t get_exit_code() override;
 };
