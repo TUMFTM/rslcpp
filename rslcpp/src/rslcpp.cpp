@@ -54,9 +54,9 @@ exit_code_t run_job(int argc, char ** argv, Job::SharedPtr job)
     time_delay_backend.execute_ready_delayed_callables();
 
     // Execute all callbacks until none is ready
-    // Since we only have a single thread with IPC communication only, it is garantueed that
+    // Since we only have a single thread with IPC communication only, it is guaranteed that
     // the callbacks are executed in the order they get ready.
-    // It is also garantueed that all callbacks that would ever be ready at this time step are
+    // It is also guaranteed that all callbacks that would ever be ready at this time step are
     // executed.
     executor.spin_all(
       std::chrono::hours(
@@ -64,7 +64,7 @@ exit_code_t run_job(int argc, char ** argv, Job::SharedPtr job)
                            // setting 0 ns to imply infinite timeout does not work with the current
                            // implementation of the events executor.
 
-/// Get the time until the the next timer.
+/// Get the time until the next timer.
 #ifdef RSLCPP__CUSTOM__RCLCPP
     std::chrono::nanoseconds time_until_next_timer = executor.get_time_until_next_timer();
 #else
