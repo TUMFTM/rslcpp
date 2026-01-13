@@ -139,7 +139,15 @@ If you use `rslcpp` in your work, please consider citing our paper. This also co
 more detailed explanation of the concepts and some benchmarks.
 
 ```bibtex
-TBD
+@misc{sagmeister2026rslcppdeterministicsimulations,
+      title={RSLCPP - Deterministic Simulations Using ROS 2}, 
+      author={Simon Sagmeister and Marcel Weinmann and Phillip Pitschi and Markus Lienkamp},
+      year={2026},
+      eprint={2601.07052},
+      archivePrefix={arXiv},
+      primaryClass={cs.RO},
+      url={https://arxiv.org/abs/2601.07052}, 
+}
 ```
 
 ## Maintainers & Credits
