@@ -19,6 +19,7 @@ public:
   {
     // declare node parameter
     this->declare_parameter("log_dir", "rslcpp/logs");
+    this->declare_parameter("storage_preset_profile", "zstd_fast");
     this->declare_parameter<std::vector<std::string>>("ignore_topic_list", {""});
     this->declare_parameter<std::vector<std::string>>("record_topic_list", {""});
 
@@ -47,8 +48,11 @@ private:
   void create_writer()
   {
     std::filesystem::path log_dir = this->get_parameter("log_dir").as_string();
-    const rosbag2_storage::StorageOptions storage_options(
-      {(log_dir / log_dir.filename()).string(), "mcap"});
+    rosbag2_storage::StorageOptions storage_options;
+    storage_options.uri = (log_dir / log_dir.filename()).string();
+    storage_options.storage_id = "mcap";
+    storage_options.storage_preset_profile =
+      this->get_parameter("storage_preset_profile").as_string();
     const rosbag2_cpp::ConverterOptions converter_options(
       {rmw_get_serialization_format(), rmw_get_serialization_format()});
 
