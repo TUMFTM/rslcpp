@@ -19,6 +19,7 @@ public:
   {
     // declare node parameter
     this->declare_parameter("log_dir", "rslcpp/logs");
+    this->declare_parameter("bag_dir", "");
     this->declare_parameter("storage_preset_profile", "zstd_fast");
     this->declare_parameter<std::vector<std::string>>("ignore_topic_list", {""});
     this->declare_parameter<std::vector<std::string>>("record_topic_list", {""});
@@ -47,9 +48,18 @@ private:
    */
   void create_writer()
   {
-    std::filesystem::path log_dir = this->get_parameter("log_dir").as_string();
+    std::filesystem::path bag_dir = this->get_parameter("bag_dir").as_string();
     rosbag2_storage::StorageOptions storage_options;
-    storage_options.uri = (log_dir / log_dir.filename()).string();
+    if (!bag_dir.empty()) {
+      // New behavior: bag_dir is used directly as the rosbag2 URI, so the bag
+      // files land directly inside it (e.g. <bag_dir>/<basename>_0.mcap).
+      storage_options.uri = bag_dir.string();
+    } else {
+      // Legacy behavior: log_dir is a parent folder; the bag is nested one level
+      // deeper as <log_dir>/<log_dir.filename()>/<...>_0.mcap.
+      std::filesystem::path log_dir = this->get_parameter("log_dir").as_string();
+      storage_options.uri = (log_dir / log_dir.filename()).string();
+    }
     storage_options.storage_id = "mcap";
     storage_options.storage_preset_profile =
       this->get_parameter("storage_preset_profile").as_string();
