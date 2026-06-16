@@ -1,5 +1,6 @@
 // Copyright 2025 Marcel Weinmann
 #pragma once
+#include <algorithm>
 #include <filesystem>
 #include <memory>
 #include <rclcpp/rclcpp.hpp>
@@ -9,6 +10,7 @@
 #include <rslcpp/utilities.hpp>
 #include <rslcpp_dynamic_job/backend.hpp>
 #include <std_msgs/msg/bool.hpp>
+#include <std_msgs/msg/float32.hpp>
 #include <string>
 #include <vector>
 
@@ -37,6 +39,8 @@ public:
     // declare node parameter
     this->declare_parameter("bag_file_path", "");
     this->declare_parameter("pub_intervall_us", 100);
+    this->declare_parameter("pub_progress", false);
+    pub_progress_enabled_ = this->get_parameter("pub_progress").as_bool();
 
     std::string bag_path = this->get_parameter("bag_file_path").as_string();
     std::filesystem::path filePath(bag_path);
@@ -52,6 +56,12 @@ public:
         last_msg_ = rosbag_->read_next();
         initial_time_ = get_last_message_timestamp();
         dynamic_job::set_initial_time(initial_time_);
+      }
+
+      // set up the progress publisher if enabled
+      if (pub_progress_enabled_) {
+        bag_duration_s_ = get_bag_duration()->seconds();
+        pub_progress_ = this->create_publisher<std_msgs::msg::Float32>("/rslcpp/progress", 1);
       }
     } else {
       std::cout << "RSLCPP | BagPlayer | The specified rosbag file does not exist." << std::endl;
@@ -164,6 +174,11 @@ private:
       publish_message();
     }
 
+    // publish the current time progress in relation to the bag length
+    if (pub_progress_enabled_) {
+      publish_progress();
+    }
+
     // publish the information that all messages in the bag have been published
     if (!rosbag_->has_next()) {
       auto message = std_msgs::msg::Bool();
@@ -171,10 +186,24 @@ private:
       pub_status_->publish(message);
     }
   }
+  /**
+   * Publish the elapsed time in relation to the bag length as a value in [0, 1]
+   */
+  void publish_progress(void)
+  {
+    const double elapsed = (this->get_clock()->now() - initial_time_).seconds();
+
+    auto message = std_msgs::msg::Float32();
+    message.data = bag_duration_s_ > 0.0
+                     ? static_cast<float>(std::clamp(elapsed / bag_duration_s_, 0.0, 1.0))
+                     : 0.0f;
+    pub_progress_->publish(message);
+  }
 
 private:
   rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr pub_status_ =
     this->create_publisher<std_msgs::msg::Bool>("/rslcpp/shutdown", 1);
+  rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr pub_progress_{};
 
   rclcpp::TimerBase::SharedPtr timer_{};
   std::map<std::string, rclcpp::GenericPublisher::SharedPtr> pub_vec_{};
@@ -182,6 +211,8 @@ private:
   rosbag2_storage::SerializedBagMessageSharedPtr last_msg_{};
 
   rclcpp::Time initial_time_;
+  double bag_duration_s_{0.0};
+  bool pub_progress_enabled_{false};
   bool valid_bag_storage_{false};
 };
 }  // namespace rslcpp::helper_nodes

@@ -48,12 +48,15 @@ Header: [`include/rslcpp_helper_nodes/player.hpp`](./include/rslcpp_helper_nodes
 
 - `bag_file_path` (string, default empty)
 - `pub_intervall_us` (int, default `100`)
+- `pub_progress` (bool, default `false`)
+  - if `true`, publishes playback progress on `/rslcpp/progress`
 
 ### What it does
 
 - Opens a rosbag and creates a `GenericPublisher` for each recorded topic.
 - Publishes messages when their bag timestamp is earlier than the current simulation clock.
 - Sets the simulation initial time via `rslcpp::dynamic_job::set_initial_time(...)` based on the first message.
+- When `pub_progress` is enabled, publishes the elapsed time relative to the bag length on `/rslcpp/progress` (`std_msgs/msg/Float32`, a value in `[0, 1]`).
 
 ## BagRecorder
 
