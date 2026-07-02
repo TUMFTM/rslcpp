@@ -1,10 +1,12 @@
 // Copyright 2025 Marcel Weinmann
 #pragma once
 #include <algorithm>
+#include <chrono>
 #include <filesystem>
 #include <memory>
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp/serialization.hpp>
+#include <rosbag2_storage/storage_filter.hpp>
 #include <rosbag2_storage/storage_options.hpp>
 #include <rosbag2_transport/reader_writer_factory.hpp>
 #include <rslcpp/utilities.hpp>
@@ -12,6 +14,8 @@
 #include <std_msgs/msg/bool.hpp>
 #include <std_msgs/msg/float32.hpp>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #if ROS_DISTRO_HUMBLE
@@ -40,7 +44,15 @@ public:
     this->declare_parameter("bag_file_path", "");
     this->declare_parameter("pub_intervall_us", 100);
     this->declare_parameter("pub_progress", false);
+    this->declare_parameter("topics", std::vector<std::string>());
+    this->declare_parameter("start_offset", 0.0);
     pub_progress_enabled_ = this->get_parameter("pub_progress").as_bool();
+    topics_filter_ = this->get_parameter("topics").as_string_array();
+    topics_filter_.erase(
+      std::remove(topics_filter_.begin(), topics_filter_.end(), ""), topics_filter_.end());
+    topics_.reserve(topics_filter_.size());
+    topics_.insert(topics_filter_.begin(), topics_filter_.end());
+    start_offset_s_ = std::max(0.0, this->get_parameter("start_offset").as_double());
 
     std::string bag_path = this->get_parameter("bag_file_path").as_string();
     std::filesystem::path filePath(bag_path);
@@ -49,6 +61,8 @@ public:
     if (std::filesystem::exists(filePath)) {
       valid_bag_storage_ = true;
       create_reader(bag_path);
+      apply_topics_filter();
+      seek_start_offset();
       init_publisher();
 
       // read the first message and store initial time for the job handler
@@ -112,12 +126,56 @@ private:
   {
     // get all topics and types
     std::vector<rosbag2_storage::TopicMetadata> metadata_vec = rosbag_->get_all_topics_and_types();
+    pub_vec_.reserve(topics_.empty() ? metadata_vec.size() : topics_.size());
 
     // create a generic publisher for each topic
     for (const rosbag2_storage::TopicMetadata & metadata : metadata_vec) {
+      if (!should_play_topic(metadata.name)) {
+        continue;
+      }
       pub_vec_[metadata.name] =
         this->create_generic_publisher(metadata.name, metadata.type, get_qos(metadata));
     }
+  }
+  /**
+   * Restricts the reader to the requested playback topics.
+   */
+  void apply_topics_filter(void)
+  {
+    if (topics_filter_.empty()) {
+      return;
+    }
+
+    rosbag2_storage::StorageFilter storage_filter;
+    storage_filter.topics = topics_filter_;
+    rosbag_->set_filter(storage_filter);
+  }
+  /**
+   * Seeks the reader to bag start + configured offset.
+   */
+  void seek_start_offset(void)
+  {
+    const auto metadata = rosbag_->get_metadata();
+    const auto bag_start_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
+      metadata.starting_time.time_since_epoch());
+    const auto start_offset_ns =
+      std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(
+        start_offset_s_));
+    const auto seek_timestamp = bag_start_ns + start_offset_ns;
+    initial_time_ = rclcpp::Time(
+      static_cast<rcutils_time_point_value_t>(seek_timestamp.count()), RCL_ROS_TIME);
+    if (start_offset_s_ <= 0.0) {
+      return;
+    }
+
+    rosbag_->seek(static_cast<rcutils_time_point_value_t>(seek_timestamp.count()));
+  }
+  /**
+   * Checks whether the topic is included in the configured playback set.
+   */
+  bool should_play_topic(const std::string & topic) const
+  {
+    return topics_.empty() || topics_.find(topic) != topics_.end();
   }
   /**
    * Returns the duration of the entire ros bag
@@ -141,7 +199,10 @@ private:
   void publish_last_message(void)
   {
     rclcpp::SerializedMessage serialized_msg(*last_msg_->serialized_data);
-    pub_vec_[last_msg_->topic_name]->publish(serialized_msg);
+    const auto publisher = pub_vec_.find(last_msg_->topic_name);
+    if (publisher != pub_vec_.end()) {
+      publisher->second->publish(serialized_msg);
+    }
     last_msg_ = nullptr;
   }
   /**
@@ -206,11 +267,14 @@ private:
   rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr pub_progress_{};
 
   rclcpp::TimerBase::SharedPtr timer_{};
-  std::map<std::string, rclcpp::GenericPublisher::SharedPtr> pub_vec_{};
+  std::unordered_map<std::string, rclcpp::GenericPublisher::SharedPtr> pub_vec_{};
   std::unique_ptr<rosbag2_cpp::Reader> rosbag_{};
   rosbag2_storage::SerializedBagMessageSharedPtr last_msg_{};
 
-  rclcpp::Time initial_time_;
+  rclcpp::Time initial_time_{0, 0, RCL_ROS_TIME};
+  std::vector<std::string> topics_filter_{};
+  std::unordered_set<std::string> topics_{};
+  double start_offset_s_{0.0};
   double bag_duration_s_{0.0};
   bool pub_progress_enabled_{false};
   bool valid_bag_storage_{false};
