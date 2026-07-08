@@ -142,12 +142,12 @@ more detailed explanation of the concepts and some benchmarks.
 @ARTICLE{sagmeister-et-al-2026-rslcpp,
   author={Sagmeister, Simon and Weinmann, Marcel and Pitschi, Phillip and Lienkamp, Markus},
   journal={IEEE Robotics and Automation Practice}, 
-  title={RSLCPP - Deterministic Simulations Using ROS 2}, 
+  title={RSLCPP—Deterministic Simulations Using ROS 2}, 
   year={2026},
-  volume={},
+  volume={1},
   number={},
-  pages={1-5},
-  keywords={Simulation;Timing;Testing;Modeling;Iterative closest point algorithm;Codes;Delays;Scheduling;Design methodology;Architecture},
+  pages={118-122},
+  keywords={Simulation;Timing;Testing;Modeling;Iterative closest point algorithm;Codes;Delays;Scheduling;Design methodology;Architecture;Autonomous systems;middleware;reproducibility of results;robots;simulation;software testing},
   doi={10.1109/RAP.2026.3704080}
 }
 ```
