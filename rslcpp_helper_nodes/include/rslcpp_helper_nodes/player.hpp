@@ -2,8 +2,11 @@
 #pragma once
 #include <algorithm>
 #include <chrono>
+#include <cstdint>
 #include <filesystem>
+#include <map>
 #include <memory>
+#include <optional>
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp/serialization.hpp>
 #include <rosbag2_storage/storage_filter.hpp>
@@ -53,6 +56,7 @@ public:
     topics_.reserve(topics_filter_.size());
     topics_.insert(topics_filter_.begin(), topics_filter_.end());
     start_offset_s_ = std::max(0.0, this->get_parameter("start_offset").as_double());
+    parse_qos_overrides();
 
     std::string bag_path = this->get_parameter("bag_file_path").as_string();
     std::filesystem::path filePath(bag_path);
@@ -134,8 +138,216 @@ private:
         continue;
       }
       pub_vec_[metadata.name] =
-        this->create_generic_publisher(metadata.name, metadata.type, get_qos(metadata));
+        this->create_generic_publisher(metadata.name, metadata.type, resolve_qos(metadata));
     }
+
+    // warn about QoS overrides that do not match any of the played topics
+    for (const auto & override_entry : qos_overrides_) {
+      if (pub_vec_.find(override_entry.first) == pub_vec_.end()) {
+        RCLCPP_WARN_STREAM(
+          this->get_logger(), "BagPlayer: The QoS override for topic '"
+                                << override_entry.first
+                                << "' does not match any of the played topics.");
+      }
+    }
+  }
+  /**
+   * Reads the per topic QoS overrides from the node parameters.
+   *
+   * The parameters use the same layout as the QoS profile override file of
+   * `ros2 bag play --qos-profile-overrides-path`:
+   *
+   *   qos_overrides:
+   *     /some/topic:
+   *       reliability: reliable
+   *       durability: transient_local
+   *       history: keep_last
+   *       depth: 10
+   *
+   * The additional 'publisher' level of the rclcpp QoS overriding feature is accepted as well,
+   * i.e. 'qos_overrides./some/topic.publisher.reliability' is equivalent to the layout above.
+   */
+  void parse_qos_overrides(void)
+  {
+    const std::string prefix = "qos_overrides.";
+    const std::string publisher_level = "publisher.";
+    const std::string subscription_level = "subscription.";
+    for (const auto & [name, value] :
+         this->get_node_parameters_interface()->get_parameter_overrides()) {
+      if (name.rfind(prefix, 0) != 0) {
+        continue;
+      }
+
+      // topic names cannot contain a '.', therefore the first '.' separates topic and policy
+      const std::string entry = name.substr(prefix.size());
+      const std::size_t separator = entry.find('.');
+      if (separator == std::string::npos || separator == 0 || separator + 1 == entry.size()) {
+        throw rclcpp::exceptions::InvalidParametersException(
+          "BagPlayer: '" + name +
+          "' is not a valid QoS override, expected 'qos_overrides.<topic>.<policy>'.");
+      }
+      std::string policy = entry.substr(separator + 1);
+
+      // the player has no subscriptions, so overrides for them are none of its business
+      if (policy.rfind(subscription_level, 0) == 0) {
+        continue;
+      }
+      if (policy.rfind(publisher_level, 0) == 0) {
+        policy = policy.substr(publisher_level.size());
+      }
+      if (qos_policy_names().find(policy) == qos_policy_names().end()) {
+        throw rclcpp::exceptions::InvalidParametersException(
+          "BagPlayer: '" + policy + "' is not a supported QoS policy (parameter '" + name + "').");
+      }
+
+      // declaring the parameter makes the override visible for parameter introspection
+      if (!this->has_parameter(name)) {
+        this->declare_parameter(name, value);
+      }
+      qos_overrides_[entry.substr(0, separator)].emplace(policy, this->get_parameter(name));
+    }
+  }
+  /**
+   * Returns all QoS policies that can be overridden for a topic
+   *
+   * \return a const reference to the set of supported QoS policy names
+   */
+  static const std::unordered_set<std::string> & qos_policy_names(void)
+  {
+    static const std::unordered_set<std::string> names{
+      "history",
+      "depth",
+      "reliability",
+      "durability",
+      "liveliness",
+      "avoid_ros_namespace_conventions",
+      "deadline",
+      "deadline.sec",
+      "deadline.nsec",
+      "lifespan",
+      "lifespan.sec",
+      "lifespan.nsec",
+      "liveliness_lease_duration",
+      "liveliness_lease_duration.sec",
+      "liveliness_lease_duration.nsec"};
+    return names;
+  }
+  /**
+   * Applies the configured QoS overrides on top of the QoS profile recorded in the bag
+   *
+   * \return the QoS profile the publisher of the topic should offer
+   */
+  rclcpp::QoS resolve_qos(const rosbag2_storage::TopicMetadata & metadata)
+  {
+    rclcpp::QoS qos = get_qos(metadata);
+    const auto override_entry = qos_overrides_.find(metadata.name);
+    if (override_entry == qos_overrides_.end()) {
+      return qos;
+    }
+    const std::map<std::string, rclcpp::Parameter> & policies = override_entry->second;
+
+    // the depth is applied before the history so that an explicit 'keep_all' is not overwritten
+    const auto depth = policies.find("depth");
+    if (depth != policies.end()) {
+      qos.keep_last(static_cast<size_t>(std::max<int64_t>(0, depth->second.as_int())));
+    }
+    const auto history = policies.find("history");
+    if (history != policies.end()) {
+      qos.history(parse_qos_policy<rmw_qos_history_policy_t>(
+        history->second, {{"system_default", RMW_QOS_POLICY_HISTORY_SYSTEM_DEFAULT},
+                          {"keep_last", RMW_QOS_POLICY_HISTORY_KEEP_LAST},
+                          {"keep_all", RMW_QOS_POLICY_HISTORY_KEEP_ALL}}));
+    }
+    const auto reliability = policies.find("reliability");
+    if (reliability != policies.end()) {
+      qos.reliability(parse_qos_policy<rmw_qos_reliability_policy_t>(
+        reliability->second, {{"system_default", RMW_QOS_POLICY_RELIABILITY_SYSTEM_DEFAULT},
+                              {"reliable", RMW_QOS_POLICY_RELIABILITY_RELIABLE},
+                              {"best_effort", RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT}}));
+    }
+    const auto durability = policies.find("durability");
+    if (durability != policies.end()) {
+      qos.durability(parse_qos_policy<rmw_qos_durability_policy_t>(
+        durability->second, {{"system_default", RMW_QOS_POLICY_DURABILITY_SYSTEM_DEFAULT},
+                             {"transient_local", RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL},
+                             {"volatile", RMW_QOS_POLICY_DURABILITY_VOLATILE}}));
+    }
+    const auto liveliness = policies.find("liveliness");
+    if (liveliness != policies.end()) {
+      qos.liveliness(parse_qos_policy<rmw_qos_liveliness_policy_t>(
+        liveliness->second, {{"system_default", RMW_QOS_POLICY_LIVELINESS_SYSTEM_DEFAULT},
+                             {"automatic", RMW_QOS_POLICY_LIVELINESS_AUTOMATIC},
+                             {"manual_by_topic", RMW_QOS_POLICY_LIVELINESS_MANUAL_BY_TOPIC}}));
+    }
+    const auto deadline = parse_qos_duration(policies, "deadline");
+    if (deadline.has_value()) {
+      qos.deadline(deadline.value());
+    }
+    const auto lifespan = parse_qos_duration(policies, "lifespan");
+    if (lifespan.has_value()) {
+      qos.lifespan(lifespan.value());
+    }
+    const auto lease_duration = parse_qos_duration(policies, "liveliness_lease_duration");
+    if (lease_duration.has_value()) {
+      qos.liveliness_lease_duration(lease_duration.value());
+    }
+    const auto avoid_conventions = policies.find("avoid_ros_namespace_conventions");
+    if (avoid_conventions != policies.end()) {
+      qos.avoid_ros_namespace_conventions(avoid_conventions->second.as_bool());
+    }
+
+    RCLCPP_INFO_STREAM(
+      this->get_logger(), "BagPlayer: Overriding the recorded QoS profile of topic '"
+                            << metadata.name << "' with " << policies.size()
+                            << " policy setting(s).");
+    return qos;
+  }
+  /**
+   * Converts the string value of a QoS policy parameter into its rmw policy value
+   *
+   * \return the rmw policy value matching the parameter value
+   */
+  template <typename PolicyT>
+  static PolicyT parse_qos_policy(
+    const rclcpp::Parameter & parameter, const std::map<std::string, PolicyT> & supported_values)
+  {
+    const auto value = supported_values.find(parameter.as_string());
+    if (value != supported_values.end()) {
+      return value->second;
+    }
+
+    std::string options;
+    for (const auto & supported_value : supported_values) {
+      options += (options.empty() ? "" : ", ") + supported_value.first;
+    }
+    throw rclcpp::exceptions::InvalidParameterValueException(
+      "BagPlayer: '" + parameter.as_string() + "' is not a valid value for the parameter '" +
+      parameter.get_name() + "', supported values are: " + options + ".");
+  }
+  /**
+   * Reads a duration policy that is either given in seconds or as a 'sec' / 'nsec' pair
+   *
+   * \return the configured duration or std::nullopt if the policy is not overridden
+   */
+  static std::optional<rclcpp::Duration> parse_qos_duration(
+    const std::map<std::string, rclcpp::Parameter> & policies, const std::string & policy)
+  {
+    const auto seconds = policies.find(policy);
+    if (seconds != policies.end()) {
+      return rclcpp::Duration::from_seconds(
+        seconds->second.get_type() == rclcpp::ParameterType::PARAMETER_INTEGER
+          ? static_cast<double>(seconds->second.as_int())
+          : seconds->second.as_double());
+    }
+
+    const auto sec = policies.find(policy + ".sec");
+    const auto nsec = policies.find(policy + ".nsec");
+    if (sec == policies.end() && nsec == policies.end()) {
+      return std::nullopt;
+    }
+    return rclcpp::Duration(
+      static_cast<int32_t>(sec != policies.end() ? sec->second.as_int() : 0),
+      static_cast<uint32_t>(nsec != policies.end() ? nsec->second.as_int() : 0));
   }
   /**
    * Restricts the reader to the requested playback topics.
@@ -274,6 +486,7 @@ private:
   rclcpp::Time initial_time_{0, 0, RCL_ROS_TIME};
   std::vector<std::string> topics_filter_{};
   std::unordered_set<std::string> topics_{};
+  std::unordered_map<std::string, std::map<std::string, rclcpp::Parameter>> qos_overrides_{};
   double start_offset_s_{0.0};
   double bag_duration_s_{0.0};
   bool pub_progress_enabled_{false};
