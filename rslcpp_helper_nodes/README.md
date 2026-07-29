@@ -50,6 +50,43 @@ Header: [`include/rslcpp_helper_nodes/player.hpp`](./include/rslcpp_helper_nodes
 - `pub_intervall_us` (int, default `100`)
 - `pub_progress` (bool, default `false`)
   - if `true`, publishes playback progress on `/rslcpp/progress`
+- `topics` (string array, default empty)
+  - if empty/unspecified, all topics of the bag are played
+- `start_offset` (double, default `0.0`)
+  - seconds to skip from the beginning of the bag
+- `qos_overrides` (map, default empty)
+  - per topic QoS overrides, see [QoS overrides](#qos-overrides)
+
+### QoS overrides
+
+By default each publisher offers the QoS profile that was recorded in the bag. Individual policies
+can be overridden per topic, analogous to `ros2 bag play --qos-profile-overrides-path`, but as
+regular node parameters:
+
+```yaml
+/**:
+  ros__parameters:
+    bag_file_path: /path/to/bag
+    qos_overrides:
+      /sensor/lidar/points:
+        reliability: best_effort   # system_default | reliable | best_effort
+        durability: transient_local # system_default | volatile | transient_local
+        history: keep_last          # system_default | keep_last | keep_all
+        depth: 10
+        deadline: 0.25              # seconds, or a sec/nsec pair as shown below
+        lifespan:
+          sec: 2
+          nsec: 500000000
+        liveliness: automatic       # system_default | automatic | manual_by_topic
+        liveliness_lease_duration: 5.0
+        avoid_ros_namespace_conventions: false
+```
+
+- Only the listed policies are overridden, everything else stays as recorded.
+- The extra `publisher` level of the [rclcpp QoS overriding](https://docs.ros.org/en/rolling/Concepts/Intermediate/About-Quality-of-Service-Settings.html#qos-profile-overrides)
+  feature is accepted as well, i.e. `qos_overrides./topic.publisher.reliability` works too.
+- An unknown policy name or value aborts the startup instead of silently playing with the wrong QoS.
+- An override for a topic that is not played only produces a warning.
 
 ### What it does
 
