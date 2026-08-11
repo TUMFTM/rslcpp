@@ -1,0 +1,70 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata from this file."
+title: "rslcpp - ROS Simulation Library for C++"
+type: software
+abstract: >-
+  rslcpp - the ROS simulation library for C++ - lets you turn a set of existing ROS 2 nodes
+  into a deterministic simulation. Instead of the asynchronous, multi-process default execution
+  of ROS 2, rslcpp aggregates all participating nodes in a single process and drives them
+  through a custom executor under an explicit simulation clock. A simulation run therefore
+  produces identical results across machines, CPUs, and architectures. Standard rclcpp::Node
+  classes are supported without any source code changes, either via a small Job interface or by
+  dynamically loading composable nodes from the command line. Simulation time can be decoupled
+  from wall-clock time to run faster or slower than realtime, and an optional delay backend
+  injects deterministic fixed or measured communication delays to model network latency and
+  processing jitter. Typical applications are scientific benchmarking, reinforcement learning
+  environments, system-level debugging, and continuous integration testing.
+authors:
+  - family-names: "Sagmeister"
+    given-names: "Simon"
+    orcid: "https://orcid.org/0009-0002-9246-5456"
+    affiliation: "Technical University of Munich, Germany; School of Engineering & Design, Department of Mobility Systems Engineering, Institute of Automotive Technology"
+    email: "simon.sagmeister@tum.de"
+  - family-names: "Weinmann"
+    given-names: "Marcel"
+    orcid: "https://orcid.org/0009-0008-7174-4732"
+    affiliation: "Technical University of Munich, Germany; School of Engineering & Design, Department of Mobility Systems Engineering, Institute of Automotive Technology"
+license: Apache-2.0
+keywords:
+  - "ROS 2"
+  - "deterministic simulation"
+  - "reproducibility of results"
+  - "simulation"
+  - "robotics"
+  - "middleware"
+  - "node composition"
+  - "communication delay"
+  - "software testing"
+  - "continuous integration"
+  - "autonomous systems"
+  - "C++"
+repository-code: "https://github.com/TUMFTM/rslcpp"
+url: "https://github.com/TUMFTM/rslcpp"
+version: "1.0.0"
+date-released: "2026-08-11"
+preferred-citation:
+  type: article
+  title: "RSLCPP-Deterministic Simulations Using ROS 2"
+  authors:
+    - family-names: "Sagmeister"
+      given-names: "Simon"
+      orcid: "https://orcid.org/0009-0002-9246-5456"
+      affiliation: "Technical University of Munich, Germany; School of Engineering & Design, Department of Mobility Systems Engineering, Institute of Automotive Technology"
+    - family-names: "Weinmann"
+      given-names: "Marcel"
+      orcid: "https://orcid.org/0009-0008-7174-4732"
+      affiliation: "Technical University of Munich, Germany; School of Engineering & Design, Department of Mobility Systems Engineering, Institute of Automotive Technology"
+    - family-names: "Pitschi"
+      given-names: "Phillip"
+      orcid: "https://orcid.org/0009-0008-2165-2768"
+      affiliation: "Technical University of Munich, Germany; School of Engineering & Design, Department of Engineering Physics & Computation, Institute of Automatic Control"
+    - family-names: "Lienkamp"
+      given-names: "Markus"
+      orcid: "https://orcid.org/0000-0002-9263-5323"
+      affiliation: "Technical University of Munich, Germany; School of Engineering & Design, Department of Mobility Systems Engineering, Institute of Automotive Technology"
+  journal: "IEEE Robotics and Automation Practice"
+  year: 2026
+  volume: 1
+  start: 118
+  end: 122
+  doi: "10.1109/RAP.2026.3704080"
