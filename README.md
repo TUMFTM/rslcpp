@@ -164,3 +164,6 @@ more detailed explanation of the concepts and some benchmarks.
 - [Dominic Ebner](https://github.com/ebnerdm)
 
 Thank also to the students who worked with the framework during their thesis and thus providing valuable input on requirements and design.
+
+We gratefully acknowledge financial support by:
+ - Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) | Project Number - 469341384
