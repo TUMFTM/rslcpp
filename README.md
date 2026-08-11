@@ -152,10 +152,15 @@ more detailed explanation of the concepts and some benchmarks.
 }
 ```
 
-## Maintainers & Credits
+## Core Developers
 
 - [Simon Sagmeister](https://github.com/simonsag96)
 - [Marcel Weinmann](https://github.com/MarcelWeinmann)
+
+## Contributors & Credits
+
 - [Phillip Pitschi](https://github.com/PhillPi)
+- [Maxi Leitenstern](https://github.com/mleitenstern)
+- [Dominic Ebner](https://github.com/ebnerdm)
 
 Thank also to the students who worked with the framework during their thesis and thus providing valuable input on requirements and design.
