@@ -390,17 +390,17 @@ private:
     return topics_.empty() || topics_.find(topic) != topics_.end();
   }
   /**
-   * Returns the duration of the entire ros bag
+   * Returns the timestamp of the buffered message
+   *
+   * The bag timestamp is passed on as nanoseconds so that it stays exact.
    *
    * \return the timestamp of the next message in the bag
    */
   const rclcpp::Time get_last_message_timestamp(void)
   {
     if (last_msg_ != nullptr) {
-      int32_t sec = static_cast<int32_t>(GET_TIMESTAMP(last_msg_) / 1e9);
-      uint32_t nanosec =
-        static_cast<uint32_t>(GET_TIMESTAMP(last_msg_) % static_cast<uint32_t>(1e9));
-      return rclcpp::Time(sec, nanosec, RCL_ROS_TIME);
+      return rclcpp::Time(
+        static_cast<rcutils_time_point_value_t>(GET_TIMESTAMP(last_msg_)), RCL_ROS_TIME);
     } else {
       throw std::bad_weak_ptr();
     }
