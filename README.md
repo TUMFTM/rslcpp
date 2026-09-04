@@ -1,6 +1,11 @@
 <div align="center">
 
-# rslcpp | Deterministic Simulations using ROS 2
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/rslcpp-logo-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/rslcpp-logo-light.svg">
+  <img alt="rslcpp" src="docs/rslcpp-logo-light.svg" width="380">
+</picture>
+
 
 [![ROS 2](https://img.shields.io/badge/ROS_2-Jazzy-E95420.svg?logo=ros&logoColor=white)](https://docs.ros.org/en/jazzy/)
 [![C++](https://img.shields.io/badge/C++-17-E95420?logo=c%2B%2B&logoColor=white)](https://isocpp.org/)
@@ -12,6 +17,7 @@
 
 </div>
 
+# rslcpp | Deterministic Simulations using ROS 2
 `rslcpp` - the ros simulation library for C++ - lets you run a set of ROS 2 nodes in a single-threaded simulation loop with an explicit simulation clock. The goal is to make simulation runs reproducible and simple to set up: write normal `rclcpp::Node` classes, enable `use_sim_time`, and run them either via a small `Job` interface or by dynamically loading composable nodes from the command line.
 
 ## Advantages & Applications
