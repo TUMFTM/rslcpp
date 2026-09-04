@@ -1,5 +1,11 @@
 <div align="center">
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/rslcpp-logo-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/rslcpp-logo-light.svg">
+  <img alt="rslcpp" src="docs/rslcpp-logo-light.svg" width="380">
+</picture>
+
 # rslcpp | Deterministic Simulations using ROS 2
 
 [![ROS 2](https://img.shields.io/badge/ROS_2-Jazzy-E95420.svg?logo=ros&logoColor=white)](https://docs.ros.org/en/jazzy/)
