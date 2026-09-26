@@ -1,11 +1,23 @@
-# rslcpp | Deterministic Simulations using ROS 2
+<div align="center">
 
-[![ROS 2](https://img.shields.io/badge/ROS_2-Jazzy-22314E.svg?logo=ros&logoColor=white)](https://docs.ros.org/en/jazzy/)
-[![C++](https://img.shields.io/badge/C++-17-00599C?logo=c%2B%2B&logoColor=white)](https://isocpp.org/)
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/rslcpp-logo-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/rslcpp-logo-light.svg">
+  <img alt="rslcpp" src="docs/rslcpp-logo-light.svg" width="380">
+</picture>
+
+
+[![ROS 2](https://img.shields.io/badge/ROS_2-Jazzy-E95420.svg?logo=ros&logoColor=white)](https://docs.ros.org/en/jazzy/)
+[![C++](https://img.shields.io/badge/C++-17-E95420?logo=c%2B%2B&logoColor=white)](https://isocpp.org/)
+[![License](https://img.shields.io/badge/License-Apache_2.0-E95420.svg?logo=apache&logoColor=white)](https://opensource.org/licenses/Apache-2.0)
 [![Ubuntu](https://img.shields.io/badge/Ubuntu-24.04-E95420?logo=ubuntu&logoColor=white)](https://ubuntu.com/)
-[![DOI](https://img.shields.io/badge/DOI-https://doi.org/10.48550/arXiv.2601.07052-blue)](https://doi.org/10.48550/arXiv.2601.07052)
 
+[![Paper](https://img.shields.io/badge/Paper-10.1109/RAP.2026.3704080-blue?logo=doi&logoColor=white)](https://doi.org/10.1109/RAP.2026.3704080)
+[![Software](https://img.shields.io/badge/Software-10.5281/zenodo.21894045-blue?logo=zenodo&logoColor=white)](https://doi.org/10.5281/zenodo.21894045)
+
+</div>
+
+# rslcpp | Deterministic Simulations using ROS 2
 `rslcpp` - the ros simulation library for C++ - lets you run a set of ROS 2 nodes in a single-threaded simulation loop with an explicit simulation clock. The goal is to make simulation runs reproducible and simple to set up: write normal `rclcpp::Node` classes, enable `use_sim_time`, and run them either via a small `Job` interface or by dynamically loading composable nodes from the command line.
 
 ## Advantages & Applications
@@ -142,20 +154,28 @@ more detailed explanation of the concepts and some benchmarks.
 @ARTICLE{sagmeister-et-al-2026-rslcpp,
   author={Sagmeister, Simon and Weinmann, Marcel and Pitschi, Phillip and Lienkamp, Markus},
   journal={IEEE Robotics and Automation Practice}, 
-  title={RSLCPP - Deterministic Simulations Using ROS 2}, 
+  title={RSLCPP—Deterministic Simulations Using ROS 2}, 
   year={2026},
-  volume={},
+  volume={1},
   number={},
-  pages={1-5},
-  keywords={Simulation;Timing;Testing;Modeling;Iterative closest point algorithm;Codes;Delays;Scheduling;Design methodology;Architecture},
+  pages={118-122},
+  keywords={Simulation;Timing;Testing;Modeling;Iterative closest point algorithm;Codes;Delays;Scheduling;Design methodology;Architecture;Autonomous systems;middleware;reproducibility of results;robots;simulation;software testing},
   doi={10.1109/RAP.2026.3704080}
 }
 ```
 
-## Maintainers & Credits
+## Core Developers
 
 - [Simon Sagmeister](https://github.com/simonsag96)
 - [Marcel Weinmann](https://github.com/MarcelWeinmann)
+
+## Contributors & Credits
+
 - [Phillip Pitschi](https://github.com/PhillPi)
+- [Maxi Leitenstern](https://github.com/mleitenstern)
+- [Dominic Ebner](https://github.com/ebnerdm)
 
 Thank also to the students who worked with the framework during their thesis and thus providing valuable input on requirements and design.
+
+We gratefully acknowledge financial support by:
+ - Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) | Project Number - 469341384
