@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-set(PROJECT_NAME rslcpp)
+set(PROJECT_NAME rslcpp_hooks)
 project(${PROJECT_NAME})
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -10,21 +10,17 @@ endif()
 
 set(DEPENDENCIES
   ament_cmake
-  rclcpp
-  rslcpp_exceptions
-  rslcpp_time_delay_backend
-  rslcpp_hooks
 )
 foreach(pkg_name ${DEPENDENCIES})
   find_package(${pkg_name} REQUIRED)
 endforeach()
 
 # ==============================================================================
-# BUILD RSLCPP
+# BUILD RSLCPP HOOKS
 # ==============================================================================
 
 add_library(${PROJECT_NAME} SHARED
-  src/rslcpp.cpp
+  src/hooks.cpp
 )
 
 target_include_directories(${PROJECT_NAME}
