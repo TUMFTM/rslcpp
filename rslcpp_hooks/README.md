@@ -61,7 +61,3 @@ A publish with a configured delay is queued and executed by `rslcpp::run_job` be
 
 - Single-threaded by contract, like `rslcpp` itself: nothing is locked.
 - Only the vendored `rclcpp` in [`rslcpp_rclcpp/`](../rslcpp_rclcpp/) calls the callback hooks.
-
-## Example
-
-[`rslcpp_helper_nodes::CallbackTimingRecorder`](../rslcpp_helper_nodes/README.md#callbacktimingrecorder) records the execution time of every callback per node.
