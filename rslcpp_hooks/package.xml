@@ -1,17 +1,12 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>rslcpp</name>
-  <version>1.0.0</version>
-  <description>ROS 2 Simulation Library in C++</description>
+  <name>rslcpp_hooks</name>
+  <version>0.1.0</version>
+  <description>Observer hooks into the rslcpp simulation loop and callback dispatch.</description>
   <maintainer email="simon.sagmeister@tum.de">Simon Sagmeister</maintainer>
   <license>Apache 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
-
-  <depend>rclcpp</depend>
-  <depend>rslcpp_exceptions</depend>
-  <depend>rslcpp_time_delay_backend</depend>
-  <depend>rslcpp_hooks</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_cmake_gtest</test_depend>

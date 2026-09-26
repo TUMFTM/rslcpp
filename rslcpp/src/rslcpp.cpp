@@ -4,6 +4,7 @@
 
 #include <limits>
 #include <rslcpp_exceptions/exceptions.hpp>
+#include <rslcpp_hooks/hooks.hpp>
 namespace rslcpp
 {
 exit_code_t run_job(int argc, char ** argv, Job::SharedPtr job)
@@ -38,12 +39,14 @@ exit_code_t run_job(int argc, char ** argv, Job::SharedPtr job)
   for (auto & node : nodes) {
     executor.add_node(node);
   }
+  hooks::job_started(nodes);
 
   auto sim_time = job->get_initial_time();
 
   // Do the simulation loop
   // The second conditions allows to manually break the loop on ctrl + c
   while (!job->get_finished() && rclcpp::ok(context)) {
+    hooks::step_begin(sim_time.nanoseconds());
     // Set the time delay backend
     time_delay_backend.set_time(sim_time.nanoseconds());
     // Set node clocks
@@ -63,6 +66,7 @@ exit_code_t run_job(int argc, char ** argv, Job::SharedPtr job)
         200 * 365 * 24));  // Large timeout of 200 years to ensure all callbacks are executed since
                            // setting 0 ns to imply infinite timeout does not work with the current
                            // implementation of the events executor.
+    hooks::step_end(sim_time.nanoseconds());
 
 /// Get the time until the next timer.
 #ifdef RSLCPP__CUSTOM__RCLCPP
@@ -91,6 +95,7 @@ exit_code_t run_job(int argc, char ** argv, Job::SharedPtr job)
     sim_time += time_step_duration;
     // Set the simulation time for all clocks
   }
+  hooks::job_finished();
   auto exit_code = job->get_exit_code();
   rclcpp::shutdown();
   return exit_code;
