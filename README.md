@@ -134,9 +134,10 @@ See [`rslcpp_test/executables/*.cpp`](./rslcpp_test/executables/) for complete, 
 - [`rslcpp_dynamic_job/`](./rslcpp_dynamic_job/): a ready-to-use `Job` that loads components from CLI
 - [`rslcpp_time_delay_backend/`](./rslcpp_time_delay_backend/): delay scheduling + delay models (fixed / measured)
 - [`rslcpp_time_delay/`](./rslcpp_time_delay/): a loader component that reads a CSV config and programs delays
+- [`rslcpp_hooks/`](./rslcpp_hooks/): observer hooks into the simulation loop and callback dispatch (e.g. for execution-time measurement)
 - [`rslcpp_helper_nodes/`](./rslcpp_helper_nodes/): reusable simulation helper nodes (monitor, bag player/recorder)
 - [`rslcpp_test/`](./rslcpp_test/): small executables demonstrating determinism and delays
-- [`rslcpp_rclcpp/`](./rslcpp_rclcpp/): vendored/forked ROS 2 `rclcpp`, `rclcpp_components`, `rclcpp_action`, and `rclcpp_lifecycle` packages (modified to integrate with the delay backend)
+- [`rslcpp_rclcpp/`](./rslcpp_rclcpp/): vendored/forked ROS 2 `rclcpp`, `rclcpp_components`, `rclcpp_action`, and `rclcpp_lifecycle` packages (modified to integrate with the delay backend and the hooks)
 
 ## Notes & constraints
 
