@@ -2,6 +2,23 @@
 #include "rslcpp_dynamic_node_composition/composition.hpp"
 namespace rslcpp::dynamic_composition
 {
+namespace
+{
+/// Create a singleton registry to store mapping from
+/// raw rclcpp::Node pointers to their corresponding ComponentDescription
+/// Does not access or own the ptr, therefore the ptr does not even have to valid any more
+std::unordered_map<const rclcpp::Node *, ComponentDescription> & component_registry()
+{
+  static std::unordered_map<const rclcpp::Node *, ComponentDescription> instance;
+  return instance;
+}
+}  // namespace
+const ComponentDescription * get_component_description(const rclcpp::Node * node)
+{
+  auto & registry = component_registry();
+  auto it = registry.find(node);
+  return it == registry.end() ? nullptr : &it->second;
+}
 std::vector<rclcpp::Node::SharedPtr> ComponentLoader::load_and_create_nodes(
   const std::vector<rslcpp::dynamic_composition::ComponentDescription> & components,
   rclcpp::NodeOptions const & options)
@@ -38,6 +55,7 @@ std::shared_ptr<rclcpp::Node> ComponentLoader::load_component(
   auto wrapper = node_factory->create_node_instance(modified_options);
   auto node = std::static_pointer_cast<rclcpp::Node>(wrapper.get_node_instance());
   node_wrappers.push_back(wrapper);
+  component_registry().insert_or_assign(node.get(), component);
 
   return node;
 }

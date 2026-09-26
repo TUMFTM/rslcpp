@@ -23,6 +23,12 @@ namespace rslcpp::dynamic_composition
 /// @return A parsed list of component descriptions
 std::vector<ComponentDescription> parse_components_from_command_line_arguments(
   int & argc, char **& argv);
+/// @brief Get the description of the component a node was created from.
+/// @note Every node created by any ComponentLoader in this process is registered, so this
+/// works from code that cannot reach the loader -- e.g. a component from another library.
+/// Only valid for a node that is still alive; see the note in composition.cpp.
+/// @return nullptr if the node was not created by a ComponentLoader (e.g. a fixed node).
+const ComponentDescription * get_component_description(const rclcpp::Node * node);
 /// @brief Clear the global storage to prevent dangling references
 /// @note This is necessary to prevent dangling references to nodes and class loaders
 /// @note This function should be called before the program exits or when the nodes are no longer
